@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: dst.ass1.jpa.tests.Ass1_1_2_01Test
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 0.134 s <<< FAILURE! - in dst.ass1.jpa.tests.Ass1_1_2_01Test
+dst.ass1.jpa.tests.Ass1_1_2_01Test.testRiderAccountNoBankCodeConstraint  Time elapsed: 0.061 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "dst.ass1.jpa.model.IRider.setEmail(String)" because "r1" is null
+	at dst.ass1.jpa.tests.Ass1_1_2_01Test.testRiderAccountNoBankCodeConstraint(Ass1_1_2_01Test.java:24)
+
+dst.ass1.jpa.tests.Ass1_1_2_01Test.testRiderAccountNoBankCodeConstraintJdbc  Time elapsed: 0.071 s  <<< FAILURE!
+java.lang.AssertionError
+	at dst.ass1.jpa.tests.Ass1_1_2_01Test.testRiderAccountNoBankCodeConstraintJdbc(Ass1_1_2_01Test.java:37)
+

@@ -1,0 +1,157 @@
+-------------------------------------------------------------------------------
+Test set: dst.ass1.jpa.tests.Ass1_1_1_00Test
+-------------------------------------------------------------------------------
+Tests run: 22, Failures: 22, Errors: 0, Skipped: 0, Time elapsed: 2.241 s <<< FAILURE! - in dst.ass1.jpa.tests.Ass1_1_1_00Test
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.01 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IDriver
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:39)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.011 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IEmployment
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:40)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.011 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IEmploymentKey
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:41)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.011 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.ILocation
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:42)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.011 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IMatch
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:43)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.012 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IMoney
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:44)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.012 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IOrganization
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:45)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.012 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IRider
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:46)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.013 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.ITrip
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:47)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.013 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.ITripInfo
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:48)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings  Time elapsed: 0.014 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IVehicle
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:49)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings  Time elapsed: 0.004 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IDriverDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:56)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings  Time elapsed: 0.004 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IEmploymentDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:57)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings  Time elapsed: 0.004 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.ILocationDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:58)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings  Time elapsed: 0.004 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IMatchDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:59)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings  Time elapsed: 0.005 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IOrganizationDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:60)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings  Time elapsed: 0.005 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IRiderDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:61)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings  Time elapsed: 0.005 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.ITripDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:62)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings  Time elapsed: 0.005 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.ITripInfoDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:63)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings  Time elapsed: 0.005 s  <<< FAILURE!
+java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IVehicleDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:64)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test03_entityTypesManagedCorrectly  Time elapsed: 0.001 s  <<< FAILURE!
+java.lang.AssertionError: 
+No managed types found
+Expected: is <false>
+     but: was <true>
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test03_entityTypesManagedCorrectly(Ass1_1_1_00Test.java:71)
+
+dst.ass1.jpa.tests.Ass1_1_1_00Test.test04_canInsertTestFixture  Time elapsed: 0.005 s  <<< FAILURE!
+java.lang.AssertionError: Exception while inserting test fixture.
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test04_canInsertTestFixture(Ass1_1_1_00Test.java:94)
+Caused by: java.lang.NullPointerException: Cannot invoke "dst.ass1.jpa.model.IMoney.setCurrencyValue(java.math.BigDecimal)" because "total1" is null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test04_canInsertTestFixture(Ass1_1_1_00Test.java:92)
+

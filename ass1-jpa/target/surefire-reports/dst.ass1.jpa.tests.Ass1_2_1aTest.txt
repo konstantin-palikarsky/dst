@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: dst.ass1.jpa.tests.Ass1_2_1aTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.142 s <<< FAILURE! - in dst.ass1.jpa.tests.Ass1_2_1aTest
+dst.ass1.jpa.tests.Ass1_2_1aTest.findByEmail_withNonExistingEmail_returnsNull  Time elapsed: 0.05 s  <<< ERROR!
+java.lang.IllegalStateException: Couldn't insert fixture. Can't proceed with tests
+Caused by: java.lang.NullPointerException: Cannot invoke "dst.ass1.jpa.model.IMoney.setCurrencyValue(java.math.BigDecimal)" because "total1" is null
+
+dst.ass1.jpa.tests.Ass1_2_1aTest.namedQuery_withEmailParameter_returnsNonEmptyResultSet  Time elapsed: 0.042 s  <<< ERROR!
+java.lang.IllegalStateException: Couldn't insert fixture. Can't proceed with tests
+Caused by: java.lang.NullPointerException: Cannot invoke "dst.ass1.jpa.model.IMoney.setCurrencyValue(java.math.BigDecimal)" because "total1" is null
+
+dst.ass1.jpa.tests.Ass1_2_1aTest.findByEmail_returnsCorrectResult  Time elapsed: 0.049 s  <<< ERROR!
+java.lang.IllegalStateException: Couldn't insert fixture. Can't proceed with tests
+Caused by: java.lang.NullPointerException: Cannot invoke "dst.ass1.jpa.model.IMoney.setCurrencyValue(java.math.BigDecimal)" because "total1" is null
+

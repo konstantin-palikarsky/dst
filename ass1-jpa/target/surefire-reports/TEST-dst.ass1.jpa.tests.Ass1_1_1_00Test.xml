@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="2.241" tests="22" errors="0" skipped="0" failures="22">
+  <properties>
+    <property name="java.specification.version" value="17"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="D:\Uni\Masters\8_Semester\DST\dst23\ass1-jpa\target\test-classes;D:\Uni\Masters\8_Semester\DST\dst23\ass1-jpa\target\classes;C:\Users\const\.m2\repository\org\hibernate\hibernate-core\5.6.7.Final\hibernate-core-5.6.7.Final.jar;C:\Users\const\.m2\repository\org\jboss\logging\jboss-logging\3.4.3.Final\jboss-logging-3.4.3.Final.jar;C:\Users\const\.m2\repository\javax\persistence\javax.persistence-api\2.2\javax.persistence-api-2.2.jar;C:\Users\const\.m2\repository\net\bytebuddy\byte-buddy\1.12.8\byte-buddy-1.12.8.jar;C:\Users\const\.m2\repository\antlr\antlr\2.7.7\antlr-2.7.7.jar;C:\Users\const\.m2\repository\org\jboss\spec\javax\transaction\jboss-transaction-api_1.2_spec\1.1.1.Final\jboss-transaction-api_1.2_spec-1.1.1.Final.jar;C:\Users\const\.m2\repository\org\jboss\jandex\2.4.2.Final\jandex-2.4.2.Final.jar;C:\Users\const\.m2\repository\com\fasterxml\classmate\1.5.1\classmate-1.5.1.jar;C:\Users\const\.m2\repository\javax\activation\javax.activation-api\1.2.0\javax.activation-api-1.2.0.jar;C:\Users\const\.m2\repository\org\hibernate\common\hibernate-commons-annotations\5.1.2.Final\hibernate-commons-annotations-5.1.2.Final.jar;C:\Users\const\.m2\repository\org\glassfish\jaxb\jaxb-runtime\2.3.1\jaxb-runtime-2.3.1.jar;C:\Users\const\.m2\repository\org\glassfish\jaxb\txw2\2.3.1\txw2-2.3.1.jar;C:\Users\const\.m2\repository\com\sun\istack\istack-commons-runtime\3.0.7\istack-commons-runtime-3.0.7.jar;C:\Users\const\.m2\repository\org\jvnet\staxex\stax-ex\1.8\stax-ex-1.8.jar;C:\Users\const\.m2\repository\com\sun\xml\fastinfoset\FastInfoset\1.2.15\FastInfoset-1.2.15.jar;C:\Users\const\.m2\repository\org\hibernate\validator\hibernate-validator\6.2.3.Final\hibernate-validator-6.2.3.Final.jar;C:\Users\const\.m2\repository\jakarta\validation\jakarta.validation-api\2.0.2\jakarta.validation-api-2.0.2.jar;C:\Users\const\.m2\repository\com\h2database\h2\2.1.214\h2-2.1.214.jar;C:\Users\const\.m2\repository\javax\javaee-api\8.0.1\javaee-api-8.0.1.jar;C:\Users\const\.m2\repository\com\sun\mail\javax.mail\1.6.2\javax.mail-1.6.2.jar;C:\Users\const\.m2\repository\javax\activation\activation\1.1\activation-1.1.jar;C:\Users\const\.m2\repository\javax\xml\bind\jaxb-api\2.3.1\jaxb-api-2.3.1.jar;C:\Users\const\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;C:\Users\const\.m2\repository\ch\qos\logback\logback-classic\1.2.10\logback-classic-1.2.10.jar;C:\Users\const\.m2\repository\ch\qos\logback\logback-core\1.2.10\logback-core-1.2.10.jar;C:\Users\const\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\const\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\const\.m2\repository\org\hamcrest\hamcrest-all\1.3\hamcrest-all-1.3.jar;"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://java.oracle.com/"/>
+    <property name="user.timezone" value="Europe/Berlin"/>
+    <property name="user.country.format" value="BG"/>
+    <property name="os.name" value="Windows 10"/>
+    <property name="java.vm.specification.version" value="17"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Java\jdk-17.0.3.1\bin"/>
+    <property name="sun.java.command" value="C:\Users\const\AppData\Local\Temp\surefire524306073021439132\surefirebooter15818681992005179254.jar C:\Users\const\AppData\Local\Temp\surefire524306073021439132 2023-03-06T14-49-08_936-jvmRun1 surefire781781705164410107tmp surefire_08987121554790878378tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="D:\Uni\Masters\8_Semester\DST\dst23\ass1-jpa\target\test-classes;D:\Uni\Masters\8_Semester\DST\dst23\ass1-jpa\target\classes;C:\Users\const\.m2\repository\org\hibernate\hibernate-core\5.6.7.Final\hibernate-core-5.6.7.Final.jar;C:\Users\const\.m2\repository\org\jboss\logging\jboss-logging\3.4.3.Final\jboss-logging-3.4.3.Final.jar;C:\Users\const\.m2\repository\javax\persistence\javax.persistence-api\2.2\javax.persistence-api-2.2.jar;C:\Users\const\.m2\repository\net\bytebuddy\byte-buddy\1.12.8\byte-buddy-1.12.8.jar;C:\Users\const\.m2\repository\antlr\antlr\2.7.7\antlr-2.7.7.jar;C:\Users\const\.m2\repository\org\jboss\spec\javax\transaction\jboss-transaction-api_1.2_spec\1.1.1.Final\jboss-transaction-api_1.2_spec-1.1.1.Final.jar;C:\Users\const\.m2\repository\org\jboss\jandex\2.4.2.Final\jandex-2.4.2.Final.jar;C:\Users\const\.m2\repository\com\fasterxml\classmate\1.5.1\classmate-1.5.1.jar;C:\Users\const\.m2\repository\javax\activation\javax.activation-api\1.2.0\javax.activation-api-1.2.0.jar;C:\Users\const\.m2\repository\org\hibernate\common\hibernate-commons-annotations\5.1.2.Final\hibernate-commons-annotations-5.1.2.Final.jar;C:\Users\const\.m2\repository\org\glassfish\jaxb\jaxb-runtime\2.3.1\jaxb-runtime-2.3.1.jar;C:\Users\const\.m2\repository\org\glassfish\jaxb\txw2\2.3.1\txw2-2.3.1.jar;C:\Users\const\.m2\repository\com\sun\istack\istack-commons-runtime\3.0.7\istack-commons-runtime-3.0.7.jar;C:\Users\const\.m2\repository\org\jvnet\staxex\stax-ex\1.8\stax-ex-1.8.jar;C:\Users\const\.m2\repository\com\sun\xml\fastinfoset\FastInfoset\1.2.15\FastInfoset-1.2.15.jar;C:\Users\const\.m2\repository\org\hibernate\validator\hibernate-validator\6.2.3.Final\hibernate-validator-6.2.3.Final.jar;C:\Users\const\.m2\repository\jakarta\validation\jakarta.validation-api\2.0.2\jakarta.validation-api-2.0.2.jar;C:\Users\const\.m2\repository\com\h2database\h2\2.1.214\h2-2.1.214.jar;C:\Users\const\.m2\repository\javax\javaee-api\8.0.1\javaee-api-8.0.1.jar;C:\Users\const\.m2\repository\com\sun\mail\javax.mail\1.6.2\javax.mail-1.6.2.jar;C:\Users\const\.m2\repository\javax\activation\activation\1.1\activation-1.1.jar;C:\Users\const\.m2\repository\javax\xml\bind\jaxb-api\2.3.1\jaxb-api-2.3.1.jar;C:\Users\const\.m2\repository\org\slf4j\slf4j-api\1.7.36\slf4j-api-1.7.36.jar;C:\Users\const\.m2\repository\ch\qos\logback\logback-classic\1.2.10\logback-classic-1.2.10.jar;C:\Users\const\.m2\repository\ch\qos\logback\logback-core\1.2.10\logback-core-1.2.10.jar;C:\Users\const\.m2\repository\junit\junit\4.13.2\junit-4.13.2.jar;C:\Users\const\.m2\repository\org\hamcrest\hamcrest-core\1.3\hamcrest-core-1.3.jar;C:\Users\const\.m2\repository\org\hamcrest\hamcrest-all\1.3\hamcrest-all-1.3.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\const"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2022-04-22"/>
+    <property name="java.home" value="C:\Program Files\Java\jdk-17.0.3.1"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="D:\Uni\Masters\8_Semester\DST\dst23\ass1-jpa"/>
+    <property name="java.vm.compressedOopsMode" value="32-bit"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="surefire.real.class.path" value="C:\Users\const\AppData\Local\Temp\surefire524306073021439132\surefirebooter15818681992005179254.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="17.0.3.1+2-LTS-6"/>
+    <property name="user.name" value="const"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="file.encoding" value="Cp1252"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="localRepository" value="C:\Users\const\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://bugreport.java.com/bugreport/"/>
+    <property name="java.io.tmpdir" value="C:\Users\const\AppData\Local\Temp\"/>
+    <property name="java.version" value="17.0.3.1"/>
+    <property name="user.dir" value="D:\Uni\Masters\8_Semester\DST\dst23\ass1-jpa"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.language.format" value="bg"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Java\jdk-17.0.3.1\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Users\const\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\local\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\usr\bin;C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\Users\const\bin;C:\apache-maven-3.8.5\bin;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Python310\Scripts;C:\Python310;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files\nodejs;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\apache-maven-3.8.5\bin;C:\Program Files\Java\jdk-17.0.3.1\bin;C:\Users\const\AppData\Local\Microsoft\WindowsApps;C:\Users\const\AppData\Roaming\npm;C:\Users\const\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\JetBrains\RubyMine 2022.1\bin;C:\Program Files\JetBrains\IntelliJ IDEA 2022.1\bin;C:\Program Files\OpenVPN\bin;C:\Program Files\Go\bin;C:\Ruby30-x64\bin;C:\Program Files\Amazon\AWSCLIV2;C:\Program Files\Docker\Docker\resources\bin;C:\ProgramData\DockerDesktop\version-bi;C:\Program Files\MySQL\MySQL Shell 8.0\bin;C:\MinGW\bin;C:\Users\const\AppData\Local\Microsoft\WindowsApps;C:\Users\const\AppData\Roaming\npm;C:\Users\const\AppData\Local\Programs\Microsoft VS Code\bin;C:\Program Files\JetBrains\RubyMine 2022.1\bin;C:\Program Files\JetBrains\IntelliJ IDEA 2022.1\bin;C:\apache-maven-3.8.5\bin;C:\Program Files\Java\jdk-17.0.3.1\bin;C:\Users\const\go\bin;C:\Program Files\JetBrains\GoLand 2022.1.3\bin;C:\Program Files\MySQL\MySQL Server 8.0\bin;C:\Program Files\wkhtmltopdf\bin;C:\Program Files\Git\usr\bin\vendor_perl;C:\Program Files\Git\usr\bin\core_perl;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="java.vm.version" value="17.0.3.1+2-LTS-6"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="61.0"/>
+  </properties>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.01">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.IDriver&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IDriver
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:39)
+]]></failure>
+    <system-out><![CDATA[2023-03-06 14:49:11.328 - &amp#27;[31m WARN&amp#27;[0;39m [        main] &amp#27;[36morg.hibernate.orm.connections.pooling   &amp#27;[0;39m: HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+]]></system-out>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.011">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.IEmployment&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IEmployment
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:40)
+]]></failure>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.011">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.IEmploymentKey&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IEmploymentKey
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:41)
+]]></failure>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.011">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.ILocation&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.ILocation
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:42)
+]]></failure>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.011">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.IMatch&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IMatch
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:43)
+]]></failure>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.012">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.IMoney&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IMoney
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:44)
+]]></failure>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.012">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.IOrganization&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IOrganization
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:45)
+]]></failure>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.012">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.IRider&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IRider
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:46)
+]]></failure>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.013">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.ITrip&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.ITrip
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:47)
+]]></failure>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.013">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.ITripInfo&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.ITripInfo
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:48)
+]]></failure>
+  </testcase>
+  <testcase name="test01_modelFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.014">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.model.IVehicle&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.model.IVehicle
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test01_modelFactoryReturnsThings(Ass1_1_1_00Test.java:49)
+]]></failure>
+  </testcase>
+  <testcase name="test02_daoFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.004">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.dao.IDriverDAO&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IDriverDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:56)
+]]></failure>
+  </testcase>
+  <testcase name="test02_daoFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.004">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.dao.IEmploymentDAO&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IEmploymentDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:57)
+]]></failure>
+  </testcase>
+  <testcase name="test02_daoFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.004">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.dao.ILocationDAO&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.ILocationDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:58)
+]]></failure>
+  </testcase>
+  <testcase name="test02_daoFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.004">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.dao.IMatchDAO&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IMatchDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:59)
+]]></failure>
+  </testcase>
+  <testcase name="test02_daoFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.005">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.dao.IOrganizationDAO&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IOrganizationDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:60)
+]]></failure>
+  </testcase>
+  <testcase name="test02_daoFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.005">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.dao.IRiderDAO&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IRiderDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:61)
+]]></failure>
+  </testcase>
+  <testcase name="test02_daoFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.005">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.dao.ITripDAO&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.ITripDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:62)
+]]></failure>
+  </testcase>
+  <testcase name="test02_daoFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.005">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.dao.ITripInfoDAO&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.ITripInfoDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:63)
+]]></failure>
+  </testcase>
+  <testcase name="test02_daoFactoryReturnsThings" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.005">
+    <failure message="&#10;Expected: is an instance of dst.ass1.jpa.dao.IVehicleDAO&#10;     but: null" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+
+Expected: is an instance of dst.ass1.jpa.dao.IVehicleDAO
+     but: null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test02_daoFactoryReturnsThings(Ass1_1_1_00Test.java:64)
+]]></failure>
+  </testcase>
+  <testcase name="test03_entityTypesManagedCorrectly" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.001">
+    <failure message="No managed types found&#10;Expected: is &lt;false&gt;&#10;     but: was &lt;true&gt;" type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: 
+No managed types found
+Expected: is <false>
+     but: was <true>
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test03_entityTypesManagedCorrectly(Ass1_1_1_00Test.java:71)
+]]></failure>
+  </testcase>
+  <testcase name="test04_canInsertTestFixture" classname="dst.ass1.jpa.tests.Ass1_1_1_00Test" time="0.005">
+    <failure message="Exception while inserting test fixture." type="java.lang.AssertionError"><![CDATA[java.lang.AssertionError: Exception while inserting test fixture.
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test04_canInsertTestFixture(Ass1_1_1_00Test.java:94)
+Caused by: java.lang.NullPointerException: Cannot invoke "dst.ass1.jpa.model.IMoney.setCurrencyValue(java.math.BigDecimal)" because "total1" is null
+	at dst.ass1.jpa.tests.Ass1_1_1_00Test.test04_canInsertTestFixture(Ass1_1_1_00Test.java:92)
+]]></failure>
+  </testcase>
+</testsuite>

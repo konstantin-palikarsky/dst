@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: dst.ass1.jpa.tests.Ass1_1_1_08Test
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.136 s <<< FAILURE! - in dst.ass1.jpa.tests.Ass1_1_1_08Test
+dst.ass1.jpa.tests.Ass1_1_1_08Test.testTripStatus  Time elapsed: 0.092 s  <<< ERROR!
+java.lang.IllegalStateException: Couldn't insert fixture. Can't proceed with tests
+Caused by: java.lang.NullPointerException: Cannot invoke "dst.ass1.jpa.model.IMoney.setCurrencyValue(java.math.BigDecimal)" because "total1" is null
+
+dst.ass1.jpa.tests.Ass1_1_1_08Test.testTripRiderAssociation  Time elapsed: 0.043 s  <<< ERROR!
+java.lang.IllegalStateException: Couldn't insert fixture. Can't proceed with tests
+Caused by: java.lang.NullPointerException: Cannot invoke "dst.ass1.jpa.model.IMoney.setCurrencyValue(java.math.BigDecimal)" because "total1" is null
+
