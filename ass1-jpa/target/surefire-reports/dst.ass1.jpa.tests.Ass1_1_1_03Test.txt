@@ -1,8 +1,0 @@
--------------------------------------------------------------------------------
-Test set: dst.ass1.jpa.tests.Ass1_1_1_03Test
--------------------------------------------------------------------------------
-Tests run: 2, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.284 s <<< FAILURE! - in dst.ass1.jpa.tests.Ass1_1_1_03Test
-dst.ass1.jpa.tests.Ass1_1_1_03Test.testConstraint  Time elapsed: 0.127 s  <<< ERROR!
-java.lang.NullPointerException: Cannot invoke "dst.ass1.jpa.model.IRider.setEmail(String)" because "e1" is null
-	at dst.ass1.jpa.tests.Ass1_1_1_03Test.testConstraint(Ass1_1_1_03Test.java:30)
-
