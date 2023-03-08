@@ -5,6 +5,9 @@ import dst.ass1.jpa.model.*;
 import java.util.Collection;
 import java.util.Date;
 
+/**
+* JPA Implementation in XML
+ * */
 public class Trip implements ITrip {
     private  Long id;
     private  Date created;

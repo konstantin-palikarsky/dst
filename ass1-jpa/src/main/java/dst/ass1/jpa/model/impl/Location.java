@@ -4,6 +4,7 @@ import dst.ass1.jpa.model.ILocation;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class Location implements ILocation {
@@ -11,8 +12,10 @@ public class Location implements ILocation {
     @Id
     private Long id;
 
+    @NotNull
     private String name;
 
+    @NotNull
     private Long locationId;
 
 
