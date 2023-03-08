@@ -19,6 +19,7 @@ public class Organization implements IOrganization {
 
     private String name;
 
+    @ManyToMany
     private Collection<IEmployment> employments;
 
     @ManyToMany

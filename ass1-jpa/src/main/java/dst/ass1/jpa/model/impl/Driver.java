@@ -4,10 +4,7 @@ import dst.ass1.jpa.model.IDriver;
 import dst.ass1.jpa.model.IEmployment;
 import dst.ass1.jpa.model.IVehicle;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
@@ -24,7 +21,7 @@ public class Driver implements IDriver {
 
     private Double avgRating;
 
-    @OneToMany
+    @ManyToMany
     private Collection<IEmployment> employments;
 
     @ManyToOne
