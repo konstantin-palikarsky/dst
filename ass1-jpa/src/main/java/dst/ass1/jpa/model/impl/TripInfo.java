@@ -27,7 +27,7 @@ public class TripInfo implements ITripInfo {
 
     private Integer riderRating;
 
-    @OneToOne
+    @OneToOne(targetEntity = Trip.class)
     private ITrip trip;
 
     @Override

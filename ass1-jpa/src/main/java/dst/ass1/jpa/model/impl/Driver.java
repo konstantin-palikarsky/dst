@@ -21,10 +21,10 @@ public class Driver implements IDriver {
 
     private Double avgRating;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY, targetEntity = Employment.class)
     private Collection<IEmployment> employments;
 
-    @ManyToOne
+    @ManyToOne(targetEntity = Vehicle.class)
     private IVehicle vehicle;
 
     @Override

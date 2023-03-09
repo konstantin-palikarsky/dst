@@ -4,4 +4,46 @@
                  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence/orm http://xmlns.jcp.org/xml/ns/persistence/orm_2_2.xsd"
                  version="2.2">
 
+
+
+<entity class="dst.ass1.jpa.model.impl.Trip" name="Trip">
+    <attributes>
+        <id name="id"/>
+
+        <basic name="state"/>
+
+        <basic name="updated"/>
+
+        <basic name="created"/>
+
+        <many-to-one name="rider" target-entity="dst.ass1.jpa.model.impl.Rider" >
+
+        </many-to-one>
+
+        <one-to-one name="pickup" target-entity="dst.ass1.jpa.model.impl.Location">
+
+        </one-to-one>
+        <one-to-one name="destination" target-entity="dst.ass1.jpa.model.impl.Location">
+
+        </one-to-one>
+
+        <one-to-one name="match" target-entity="dst.ass1.jpa.model.impl.Match">
+
+        </one-to-one>
+
+        <one-to-one name="tripInfo" target-entity="dst.ass1.jpa.model.impl.TripInfo" mapped-by="trip">
+
+        </one-to-one>
+
+        <many-to-many name="stops" target-entity="dst.ass1.jpa.model.impl.Location">
+
+        </many-to-many>
+
+    </attributes>
+</entity>
+
+
+
+
+
 </entity-mappings>

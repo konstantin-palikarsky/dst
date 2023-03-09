@@ -15,7 +15,6 @@ public class Trip implements ITrip {
     private TripState state;
     private ILocation pickup;
     private ILocation destination;
-    private ILocation stop;
     private IRider rider;
     private IMatch match;
     private ITripInfo tripInfo;

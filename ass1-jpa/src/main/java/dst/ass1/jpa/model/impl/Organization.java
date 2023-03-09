@@ -19,16 +19,16 @@ public class Organization implements IOrganization {
 
     private String name;
 
-    @ManyToMany
+    @ManyToMany(targetEntity = Employment.class)
     private Collection<IEmployment> employments;
 
-    @ManyToMany
+    @ManyToMany(targetEntity = Organization.class)
     private Collection<IOrganization> parts;
 
-    @ManyToMany
+    @ManyToMany(targetEntity = Organization.class)
     private Collection<IOrganization> partOf;
 
-    @ManyToMany
+    @ManyToMany(targetEntity = Vehicle.class)
     private Collection<IVehicle> vehicles;
 
 
@@ -69,7 +69,7 @@ public class Organization implements IOrganization {
 
     @Override
     public void addEmployment(IEmployment employment) {
-        this.employments.add(employment)
+        this.employments.add(employment);
     }
 
     @Override

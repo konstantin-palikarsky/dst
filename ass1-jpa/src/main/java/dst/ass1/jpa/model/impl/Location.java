@@ -18,7 +18,6 @@ public class Location implements ILocation {
     @NotNull
     private Long locationId;
 
-
     @Override
     public Long getId() {
         return null;

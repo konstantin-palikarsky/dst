@@ -13,7 +13,7 @@ public class Rider implements IRider {
     @Id
     private Long id;
 
-    @OneToMany(mappedBy = "rider")
+    @OneToMany(mappedBy = "rider", targetEntity = Trip.class)
     private Collection<ITrip> trips;
 
     @NotNull
