@@ -7,6 +7,7 @@ import dst.ass1.jpa.model.IDriver;
 import dst.ass1.jpa.model.IEmployment;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import java.util.Collection;
 public class Organization implements IOrganization {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     private String name;

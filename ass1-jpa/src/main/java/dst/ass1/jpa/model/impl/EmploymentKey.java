@@ -6,13 +6,16 @@ import dst.ass1.jpa.model.IEmploymentKey;
 import dst.ass1.jpa.model.IOrganization;
 
 import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
 public class EmploymentKey implements IEmploymentKey, Serializable {
 
+    @OneToOne(targetEntity = Driver.class)
     private IDriver driver;
+    @OneToOne(targetEntity = Organization.class)
     private IOrganization organization;
 
     public EmploymentKey(IDriver driver, IOrganization organization) {

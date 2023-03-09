@@ -12,6 +12,7 @@ import java.util.Collection;
 public class Driver implements IDriver {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     private String name;

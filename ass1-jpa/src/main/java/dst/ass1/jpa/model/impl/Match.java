@@ -9,6 +9,7 @@ import java.util.Date;
 public class Match implements IMatch {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     private Date date;

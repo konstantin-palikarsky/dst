@@ -9,6 +9,7 @@ import javax.persistence.*;
 public class Vehicle implements IVehicle {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     @Column(unique = true)

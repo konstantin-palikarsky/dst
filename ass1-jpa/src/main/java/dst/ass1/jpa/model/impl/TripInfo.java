@@ -4,16 +4,14 @@ import dst.ass1.jpa.model.IMoney;
 import dst.ass1.jpa.model.ITrip;
 import dst.ass1.jpa.model.ITripInfo;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
 public class TripInfo implements ITripInfo {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     private Date completed;

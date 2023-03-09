@@ -3,6 +3,7 @@ package dst.ass1.jpa.model.impl;
 import dst.ass1.jpa.model.ILocation;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
@@ -10,6 +11,7 @@ import javax.validation.constraints.NotNull;
 public class Location implements ILocation {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     @NotNull

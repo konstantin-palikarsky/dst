@@ -8,7 +8,9 @@
 
 <entity class="dst.ass1.jpa.model.impl.Trip" name="Trip">
     <attributes>
-        <id name="id"/>
+        <id name="id">
+        <generated-value></generated-value>
+        </id>
 
         <basic name="state"/>
 

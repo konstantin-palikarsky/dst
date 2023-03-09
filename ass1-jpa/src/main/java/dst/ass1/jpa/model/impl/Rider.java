@@ -11,6 +11,7 @@ import java.util.Collection;
 public class Rider implements IRider {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     @OneToMany(mappedBy = "rider", targetEntity = Trip.class)
