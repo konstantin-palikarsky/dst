@@ -17,7 +17,7 @@ public class Match implements IMatch {
     @Embedded
     private IMoney fare;
 
-    @OneToOne(targetEntity = Trip.class, mappedBy = "match")
+    @OneToOne(targetEntity = Trip.class)
     private ITrip trip;
 
     @ManyToOne(targetEntity = Vehicle.class)

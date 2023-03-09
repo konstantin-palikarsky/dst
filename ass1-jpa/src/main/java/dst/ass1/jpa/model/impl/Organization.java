@@ -5,11 +5,9 @@ import dst.ass1.jpa.model.IOrganization;
 import dst.ass1.jpa.model.IVehicle;
 import dst.ass1.jpa.model.IDriver;
 import dst.ass1.jpa.model.IEmployment;
+import dst.ass1.jpa.util.Constants;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
@@ -25,9 +23,16 @@ public class Organization implements IOrganization {
     private Collection<IEmployment> employments;
 
     @ManyToMany(targetEntity = Organization.class)
-    private Collection<IOrganization> parts;
+    @JoinTable(
+            name = Constants.J_ORGANIZATION_PARTS,
+            joinColumns = @JoinColumn(name = Constants.I_ORGANIZATION_PART_OF)
+    )    private Collection<IOrganization> parts;
 
     @ManyToMany(targetEntity = Organization.class)
+    @JoinTable(
+            name = Constants.J_ORGANIZATION_PARTS,
+            joinColumns = @JoinColumn(name = Constants.I_ORGANIZATION_PARTS)
+    )
     private Collection<IOrganization> partOf;
 
     @ManyToMany(targetEntity = Vehicle.class)

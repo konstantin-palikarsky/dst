@@ -2,6 +2,8 @@ package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.*;
 
+import java.util.LinkedList;
+
 /**
  * Creates new instances of your model implementations.
  */
@@ -9,19 +11,24 @@ public class ModelFactory implements IModelFactory {
 
     @Override
     public IModelFactory createModelFactory() {
-        // TODO
+
+
         return new ModelFactory();
     }
 
     @Override
     public IDriver createDriver() {
         // TODO
-        return new Driver();
+        var driver = new Driver();
+        driver.setEmployments(new LinkedList<>());
+
+        return driver;
     }
 
     @Override
     public IEmployment createEmployment() {
         // TODO
+
         return new Employment();
     }
 
@@ -34,6 +41,8 @@ public class ModelFactory implements IModelFactory {
     @Override
     public ILocation createLocation() {
         // TODO
+
+
         return new Location();
     }
 
@@ -51,20 +60,31 @@ public class ModelFactory implements IModelFactory {
 
     @Override
     public IOrganization createOrganization() {
+        var organization = new Organization();
+        organization.setEmployments(new LinkedList<>());
+        organization.setParts(new LinkedList<>());
+        organization.setPartOf(new LinkedList<>());
+        organization.setVehicles(new LinkedList<>());
         // TODO
-        return new Organization();
+        return organization;
     }
 
     @Override
     public IRider createRider() {
         // TODO
-        return new Rider();
+        var rider = new Rider();
+        rider.setTrips(new LinkedList<>());
+
+        return rider;
     }
 
     @Override
     public ITrip createTrip() {
         // TODO
-        return new Trip();
+        var trip = new Trip();
+        trip.setStops(new LinkedList<>());
+
+        return trip;
     }
 
     @Override

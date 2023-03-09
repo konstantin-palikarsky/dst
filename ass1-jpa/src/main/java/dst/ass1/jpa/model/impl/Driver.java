@@ -17,7 +17,7 @@ public class Driver implements IDriver {
 
     private String name;
 
-    @NotNull
+    @Column(nullable = false)
     private String tel;
 
     private Double avgRating;
@@ -25,7 +25,8 @@ public class Driver implements IDriver {
     @ManyToMany(fetch = FetchType.LAZY, targetEntity = Employment.class)
     private Collection<IEmployment> employments;
 
-    @ManyToOne(targetEntity = Vehicle.class)
+    @ManyToOne(targetEntity = Vehicle.class, optional = false)
+    @NotNull
     private IVehicle vehicle;
 
     @Override

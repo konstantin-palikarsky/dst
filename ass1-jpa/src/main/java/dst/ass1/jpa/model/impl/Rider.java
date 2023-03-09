@@ -2,12 +2,15 @@ package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.IRider;
 import dst.ass1.jpa.model.ITrip;
+import dst.ass1.jpa.util.Constants;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 @Entity
+@Table( indexes = @Index(name = "RiderIndex", columnList = Constants.M_RIDER_ACCOUNT+","+Constants.M_RIDER_BANK_CODE))
 public class Rider implements IRider {
 
     @Id
@@ -17,19 +20,21 @@ public class Rider implements IRider {
     @OneToMany(mappedBy = "rider", targetEntity = Trip.class)
     private Collection<ITrip> trips;
 
-    @NotNull
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(columnDefinition = "VARBINARY(20)")
     private byte[] password;
 
+    @Column(unique = true)
     private String accountNo;
 
+    @Column(unique = true)
     private String bankCode;
 
     private String name;
 
-    @NotNull
+    @Column(nullable = false)
     private String tel;
 
     private Double avgRating;
