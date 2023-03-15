@@ -4,21 +4,17 @@ import dst.ass1.jpa.dao.GenericDAO;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class FinderDaoImpl<T, S extends T> implements GenericDAO<T> {
+public abstract class FinderDaoImpl<T> implements GenericDAO<T> {
 
-    protected Class<S> entityClass;
+    protected Class<? extends T> entityClass;
 
     @PersistenceContext
     protected EntityManager em;
 
-    public FinderDaoImpl(Class<S> entityClass, EntityManager em) {
+    public FinderDaoImpl(Class<? extends T> entityClass, EntityManager em) {
         super();
         this.entityClass = entityClass;
         this.em = em;
@@ -32,14 +28,8 @@ public abstract class FinderDaoImpl<T, S extends T> implements GenericDAO<T> {
 
     @Override
     public List<T> findAll() {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
 
-        //TODO found this on SO, would be nice to understand it
-        CriteriaQuery<S> cq = cb.createQuery(entityClass);
-        Root<S> rootEntry = cq.from(entityClass);
-        CriteriaQuery<S> all =  cq.select(rootEntry);
-        TypedQuery<S> allQuery = em.createQuery(all);
+        return new LinkedList<>(em.createQuery("FROM " + entityClass.getSimpleName(), entityClass).getResultList());
 
-        return new LinkedList<>(allQuery.getResultList());
     }
 }

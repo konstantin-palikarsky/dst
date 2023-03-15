@@ -6,7 +6,7 @@ import dst.ass1.jpa.model.impl.Vehicle;
 
 import javax.persistence.EntityManager;
 
-public class VehicleDAO extends FinderDaoImpl<IVehicle, Vehicle> implements IVehicleDAO {
+public class VehicleDAO extends FinderDaoImpl<IVehicle> implements IVehicleDAO {
     public VehicleDAO(EntityManager em) {
         super(Vehicle.class, em);
     }

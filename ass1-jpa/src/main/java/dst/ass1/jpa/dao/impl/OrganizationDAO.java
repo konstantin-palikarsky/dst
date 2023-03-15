@@ -7,7 +7,7 @@ import dst.ass1.jpa.model.impl.Organization;
 
 import javax.persistence.EntityManager;
 
-public class OrganizationDAO extends FinderDaoImpl<IOrganization, Organization> implements IOrganizationDAO {
+public class OrganizationDAO extends FinderDaoImpl<IOrganization> implements IOrganizationDAO {
 
     public OrganizationDAO( EntityManager em) {
         super(Organization.class, em);

@@ -11,6 +11,10 @@ import java.util.Collection;
 
 @Entity
 @Table( indexes = @Index(name = "RiderIndex", columnList = Constants.M_RIDER_ACCOUNT+","+Constants.M_RIDER_BANK_CODE))
+@NamedQuery(
+        name = Constants.Q_RIDER_BY_EMAIL,
+        query="SELECT r FROM Rider r WHERE r.email=:email"
+)
 public class Rider implements IRider {
 
     @Id
