@@ -8,9 +8,9 @@
     <entity class="dst.ass1.jpa.model.impl.Trip" name="Trip">
         <table>
 
-            <index column-list="pickup_id" name="pickup_index" unique="false"/>
+            <!--<index column-list="pickup_id" name="pickup_index" unique="false"/>
             <index column-list="destination_id" name="location_index" unique="false"/>
-
+-->
         </table>
 
         <attributes>
@@ -28,13 +28,13 @@
 
             </many-to-one>
 
-            <one-to-one name="pickup" target-entity="dst.ass1.jpa.model.impl.Location" optional="false">
+            <many-to-one name="pickup" target-entity="dst.ass1.jpa.model.impl.Location" optional="false">
 
-            </one-to-one>
+            </many-to-one>
 
-            <one-to-one name="destination" target-entity="dst.ass1.jpa.model.impl.Location" optional="false" maps-id="id">
+            <many-to-one name="destination" target-entity="dst.ass1.jpa.model.impl.Location" optional="false">
 
-            </one-to-one>
+            </many-to-one>
 
             <one-to-one name="match" target-entity="dst.ass1.jpa.model.impl.Match" mapped-by="trip">
 

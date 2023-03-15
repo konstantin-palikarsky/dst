@@ -3,6 +3,7 @@ package dst.ass1.jpa.model.impl;
 import dst.ass1.jpa.model.IMoney;
 import dst.ass1.jpa.model.ITrip;
 import dst.ass1.jpa.model.ITripInfo;
+import org.hibernate.annotations.Target;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -19,6 +20,7 @@ public class TripInfo implements ITripInfo {
     private Double distance;
 
     @Embedded
+    @Target(Money.class)
     private IMoney total;
 
     private Integer driverRating;

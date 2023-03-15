@@ -1,6 +1,7 @@
 package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.*;
+import org.hibernate.annotations.Target;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -15,6 +16,7 @@ public class Match implements IMatch {
     private Date date;
 
     @Embedded
+    @Target(Money.class)
     private IMoney fare;
 
     @OneToOne(targetEntity = Trip.class)

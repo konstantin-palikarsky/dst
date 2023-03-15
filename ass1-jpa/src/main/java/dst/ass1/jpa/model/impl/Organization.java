@@ -25,13 +25,15 @@ public class Organization implements IOrganization {
     @ManyToMany(targetEntity = Organization.class)
     @JoinTable(
             name = Constants.J_ORGANIZATION_PARTS,
-            joinColumns = @JoinColumn(name = Constants.I_ORGANIZATION_PART_OF)
+            joinColumns = @JoinColumn(name = Constants.I_ORGANIZATION_PARTS),
+            inverseJoinColumns = @JoinColumn(name = Constants.I_ORGANIZATION_PART_OF)
     )    private Collection<IOrganization> parts;
 
     @ManyToMany(targetEntity = Organization.class)
     @JoinTable(
             name = Constants.J_ORGANIZATION_PARTS,
-            joinColumns = @JoinColumn(name = Constants.I_ORGANIZATION_PARTS)
+            joinColumns = @JoinColumn(name = Constants.I_ORGANIZATION_PART_OF),
+            inverseJoinColumns = @JoinColumn(name = Constants.I_ORGANIZATION_PARTS)
     )
     private Collection<IOrganization> partOf;
 

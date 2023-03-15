@@ -83,6 +83,7 @@ public class ModelFactory implements IModelFactory {
         // TODO
         var trip = new Trip();
         trip.setStops(new LinkedList<>());
+        trip.setDestination(new Location());
 
         return trip;
     }
