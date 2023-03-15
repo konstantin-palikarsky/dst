@@ -13,7 +13,6 @@ public abstract class BasicDAOImpl<T> implements GenericDAO<T> {
     protected EntityManager em;
 
     public BasicDAOImpl(Class<? extends T> entityClass, EntityManager em) {
-        super();
         this.entityClass = entityClass;
         this.em = em;
     }
