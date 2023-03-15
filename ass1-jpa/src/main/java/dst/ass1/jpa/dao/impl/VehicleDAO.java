@@ -2,17 +2,12 @@ package dst.ass1.jpa.dao.impl;
 
 import dst.ass1.jpa.dao.IVehicleDAO;
 import dst.ass1.jpa.model.IVehicle;
+import dst.ass1.jpa.model.impl.Vehicle;
 
-import java.util.List;
+import javax.persistence.EntityManager;
 
-public class VehicleDAO implements IVehicleDAO {
-    @Override
-    public IVehicle findById(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<IVehicle> findAll() {
-        return null;
+public class VehicleDAO extends FinderDaoImpl<IVehicle, Vehicle> implements IVehicleDAO {
+    public VehicleDAO(EntityManager em) {
+        super(Vehicle.class, em);
     }
 }

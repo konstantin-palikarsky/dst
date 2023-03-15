@@ -3,18 +3,14 @@ package dst.ass1.jpa.dao.impl;
 import dst.ass1.jpa.dao.IOrganizationDAO;
 import dst.ass1.jpa.model.IDriver;
 import dst.ass1.jpa.model.IOrganization;
+import dst.ass1.jpa.model.impl.Organization;
 
-import java.util.List;
+import javax.persistence.EntityManager;
 
-public class OrganizationDAO implements IOrganizationDAO {
-    @Override
-    public IOrganization findById(Long id) {
-        return null;
-    }
+public class OrganizationDAO extends FinderDaoImpl<IOrganization, Organization> implements IOrganizationDAO {
 
-    @Override
-    public List<IOrganization> findAll() {
-        return null;
+    public OrganizationDAO( EntityManager em) {
+        super(Organization.class, em);
     }
 
     @Override

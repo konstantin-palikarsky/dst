@@ -2,19 +2,15 @@ package dst.ass1.jpa.dao.impl;
 
 import dst.ass1.jpa.dao.IMatchDAO;
 import dst.ass1.jpa.model.IMatch;
+import dst.ass1.jpa.model.impl.Match;
 
+import javax.persistence.EntityManager;
 import java.util.Date;
-import java.util.List;
 
-public class MatchDAO implements IMatchDAO {
-    @Override
-    public IMatch findById(Long id) {
-        return null;
-    }
+public class MatchDAO extends FinderDaoImpl<IMatch, Match> implements IMatchDAO {
 
-    @Override
-    public List<IMatch> findAll() {
-        return null;
+    public MatchDAO(EntityManager em) {
+        super(Match.class, em);
     }
 
     @Override

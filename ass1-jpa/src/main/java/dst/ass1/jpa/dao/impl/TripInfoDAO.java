@@ -2,17 +2,12 @@ package dst.ass1.jpa.dao.impl;
 
 import dst.ass1.jpa.dao.ITripInfoDAO;
 import dst.ass1.jpa.model.ITripInfo;
+import dst.ass1.jpa.model.impl.TripInfo;
 
-import java.util.List;
+import javax.persistence.EntityManager;
 
-public class TripInfoDAO implements ITripInfoDAO {
-    @Override
-    public ITripInfo findById(Long id) {
-        return null;
-    }
-
-    @Override
-    public List<ITripInfo> findAll() {
-        return null;
+public class TripInfoDAO extends FinderDaoImpl<ITripInfo, TripInfo> implements ITripInfoDAO {
+    public TripInfoDAO(EntityManager em) {
+        super(TripInfo.class, em);
     }
 }
