@@ -1,13 +1,17 @@
 package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.*;
+import dst.ass1.jpa.util.Constants;
 import org.hibernate.annotations.Target;
 
 import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class Match implements IMatch {
+@NamedQuery(
+        name = Constants.Q_COUNT_MATCH_BY_DATE,
+        query="SELECT COUNT(m) FROM Match m WHERE m.date=:date"
+)public class Match implements IMatch {
 
     @Id
     @GeneratedValue

@@ -18,8 +18,8 @@ public class MatchDAO extends BasicDAOImpl<IMatch> implements IMatchDAO {
     @Override
     public long countMatchesByDate(Date date) {
         try {
-            return this.em.createNamedQuery(Constants.Q_COUNT_MATCH_BY_DATE)
-                    .setParameter("date", date).getResultList().size();
+            return (long) this.em.createNamedQuery(Constants.Q_COUNT_MATCH_BY_DATE)
+                    .setParameter("date", date).getSingleResult();
         } catch (NoResultException e) {
             return 0;
         }
