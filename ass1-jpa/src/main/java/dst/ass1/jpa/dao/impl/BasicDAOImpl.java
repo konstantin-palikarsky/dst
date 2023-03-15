@@ -3,7 +3,7 @@ package dst.ass1.jpa.dao.impl;
 import dst.ass1.jpa.dao.GenericDAO;
 
 import javax.persistence.EntityManager;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BasicDAOImpl<T> implements GenericDAO<T> {
@@ -27,7 +27,6 @@ public abstract class BasicDAOImpl<T> implements GenericDAO<T> {
     @Override
     public List<T> findAll() {
 
-        return new LinkedList<>(em.createQuery("FROM " + entityClass.getSimpleName(), entityClass).getResultList());
-
+        return new ArrayList<>(em.createQuery("FROM " + entityClass.getSimpleName(), entityClass).getResultList());
     }
 }
