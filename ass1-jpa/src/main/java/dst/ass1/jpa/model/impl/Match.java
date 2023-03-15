@@ -10,8 +10,9 @@ import java.util.Date;
 @Entity
 @NamedQuery(
         name = Constants.Q_COUNT_MATCH_BY_DATE,
-        query="SELECT COUNT(m) FROM Match m WHERE m.date=:date"
-)public class Match implements IMatch {
+        query = "SELECT COUNT(m) FROM Match m WHERE m.date=:date"
+)
+public class Match implements IMatch {
 
     @Id
     @GeneratedValue
