@@ -6,7 +6,7 @@ import dst.ass1.jpa.model.impl.Driver;
 
 import javax.persistence.EntityManager;
 
-public class DriverDAO extends FinderDaoImpl<IDriver> implements IDriverDAO {
+public class DriverDAO extends BasicDAOImpl<IDriver> implements IDriverDAO {
     public DriverDAO(EntityManager em) {
         super(Driver.class, em);
     }

@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-public class RiderDAO extends FinderDaoImpl<IRider> implements IRiderDAO {
+public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
 
 
     public RiderDAO(EntityManager em) {

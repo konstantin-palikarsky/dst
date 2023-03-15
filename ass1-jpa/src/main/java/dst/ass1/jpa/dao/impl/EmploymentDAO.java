@@ -6,7 +6,7 @@ import dst.ass1.jpa.model.impl.Employment;
 
 import javax.persistence.EntityManager;
 
-public class EmploymentDAO extends FinderDaoImpl<IEmployment> implements IEmploymentDAO {
+public class EmploymentDAO extends BasicDAOImpl<IEmployment> implements IEmploymentDAO {
     public EmploymentDAO(EntityManager em) {
         super(Employment.class, em);
     }

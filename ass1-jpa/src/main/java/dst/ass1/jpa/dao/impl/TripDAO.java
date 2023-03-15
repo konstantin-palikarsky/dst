@@ -6,7 +6,7 @@ import dst.ass1.jpa.model.impl.Trip;
 
 import javax.persistence.EntityManager;
 
-public class TripDAO extends FinderDaoImpl<ITrip> implements ITripDAO {
+public class TripDAO extends BasicDAOImpl<ITrip> implements ITripDAO {
     public TripDAO(EntityManager em) {
         super(Trip.class, em);
     }

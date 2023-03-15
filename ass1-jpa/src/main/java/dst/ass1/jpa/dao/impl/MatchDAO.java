@@ -9,7 +9,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.util.Date;
 
-public class MatchDAO extends FinderDaoImpl<IMatch> implements IMatchDAO {
+public class MatchDAO extends BasicDAOImpl<IMatch> implements IMatchDAO {
 
     public MatchDAO(EntityManager em) {
         super(Match.class, em);

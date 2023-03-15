@@ -3,18 +3,16 @@ package dst.ass1.jpa.dao.impl;
 import dst.ass1.jpa.dao.GenericDAO;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class FinderDaoImpl<T> implements GenericDAO<T> {
+public abstract class BasicDAOImpl<T> implements GenericDAO<T> {
 
     protected Class<? extends T> entityClass;
 
-    @PersistenceContext
     protected EntityManager em;
 
-    public FinderDaoImpl(Class<? extends T> entityClass, EntityManager em) {
+    public BasicDAOImpl(Class<? extends T> entityClass, EntityManager em) {
         super();
         this.entityClass = entityClass;
         this.em = em;

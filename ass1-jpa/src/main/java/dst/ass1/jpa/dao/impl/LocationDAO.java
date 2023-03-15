@@ -6,7 +6,7 @@ import dst.ass1.jpa.model.impl.Location;
 
 import javax.persistence.EntityManager;
 
-public class LocationDAO extends FinderDaoImpl<ILocation> implements ILocationDAO {
+public class LocationDAO extends BasicDAOImpl<ILocation> implements ILocationDAO {
     public LocationDAO(EntityManager em) {
         super(Location.class, em);
     }

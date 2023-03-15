@@ -3,9 +3,11 @@ package dst.ass1.jpa.dao.impl;
 import dst.ass1.jpa.dao.*;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 public class DAOFactory implements IDAOFactory {
 
+    @PersistenceContext
     private EntityManager em;
 
     public DAOFactory(EntityManager em) {
