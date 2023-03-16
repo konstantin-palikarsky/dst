@@ -12,12 +12,17 @@ import java.util.Collection;
 @Entity
 @NamedQuery(
         name = Constants.Q_TOP_DRIVER_OF_ORGANIZATION,
-        query = "SELECT m.driver " +
-                "FROM Match m " +
-                "JOIN m.driver.employments as empl " +
-                "ON (empl.id.driver.id=m.driver.id " +
-                "AND empl.id.organization.id=:organization_id ) " +
-                "WHERE m.date >= empl.since AND empl.active = TRUE"
+        query = "SELECT d " +
+                "FROM Driver d " +
+                "JOIN Match as m on (m.driver.id=d.id) " +
+                "JOIN Employment as empl " +
+                "ON (empl.id.organization.id=:organization_id " +
+                "AND empl.id.driver.id=d.id) " +
+                "WHERE m.date >= empl.since " +
+                "AND empl.active = TRUE " +
+                "GROUP BY m.trip " +
+                "ORDER BY SUM(m.trip.tripInfo.distance) DESC"+
+                ""
 )
 public class Driver extends PlatformUser implements IDriver {
 
