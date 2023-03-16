@@ -18,18 +18,7 @@ import java.util.Collection;
                 "JOIN i.organization as o " +
                 "WHERE o.id=:organization_id"
 )
-public class Driver implements IDriver {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    private String name;
-
-    @Column(nullable = false)
-    private String tel;
-
-    private Double avgRating;
+public class Driver extends PlatformUser implements IDriver {
 
     @ManyToMany(fetch = FetchType.LAZY, targetEntity = Employment.class)
     private Collection<IEmployment> employments;
@@ -61,45 +50,5 @@ public class Driver implements IDriver {
     @Override
     public IVehicle getVehicle() {
         return vehicle;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
-
-    @Override
-    public void setAvgRating(Double avgRating) {
-        this.avgRating = avgRating;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getTel() {
-        return tel;
-    }
-
-    @Override
-    public Double getAvgRating() {
-        return avgRating;
     }
 }

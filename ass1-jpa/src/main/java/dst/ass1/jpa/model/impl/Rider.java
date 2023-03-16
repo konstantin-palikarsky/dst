@@ -10,17 +10,12 @@ import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 @Entity
-@Table( indexes = @Index(name = "RiderIndex", columnList = Constants.M_RIDER_ACCOUNT+","+Constants.M_RIDER_BANK_CODE))
+@Table(indexes = @Index(name = "RiderIndex", columnList = Constants.M_RIDER_ACCOUNT + "," + Constants.M_RIDER_BANK_CODE))
 @NamedQuery(
         name = Constants.Q_RIDER_BY_EMAIL,
-        query="SELECT r FROM Rider r WHERE r.email=:email"
+        query = "SELECT r FROM Rider r WHERE r.email=:email"
 )
-public class Rider implements IRider {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
+public class Rider extends PlatformUser implements IRider {
     @OneToMany(mappedBy = "rider", targetEntity = Trip.class)
     private Collection<ITrip> trips;
 
@@ -36,13 +31,6 @@ public class Rider implements IRider {
     @Column(unique = true)
     private String bankCode;
 
-    private String name;
-
-    @Column(nullable = false)
-    private String tel;
-
-    private Double avgRating;
-
     @Override
     public void setTrips(Collection<ITrip> trips) {
         this.trips = trips;
@@ -56,46 +44,6 @@ public class Rider implements IRider {
     @Override
     public Collection<ITrip> getTrips() {
         return trips;
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
-
-    @Override
-    public void setAvgRating(Double avgRating) {
-        this.avgRating = avgRating;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public String getTel() {
-        return tel;
-    }
-
-    @Override
-    public Double getAvgRating() {
-        return avgRating;
     }
 
     @Override
