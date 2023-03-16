@@ -19,11 +19,6 @@ public class OrganizationDAO extends BasicDAOImpl<IOrganization> implements IOrg
     @Override
     public IDriver findTopAndActiveDriverByOrganization(long organizationId) {
         try {
-
-            System.err.println(this.em.createNamedQuery(Constants.Q_TOP_DRIVER_OF_ORGANIZATION)
-                    //.setMaxResults(1)
-                    .setParameter("organization_id", organizationId)
-                    .getResultList().size());
             return (IDriver) this.em.createNamedQuery(Constants.Q_TOP_DRIVER_OF_ORGANIZATION)
                     .setMaxResults(1)
                     .setParameter("organization_id", organizationId)
