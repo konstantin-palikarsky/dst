@@ -10,10 +10,6 @@ import javax.persistence.*;
 import java.util.Collection;
 
 @Entity
-@NamedQuery(
-        name = Constants.Q_TOP_DRIVER_OF_ORGANIZATION,
-        query = "SELECT o FROM Organization o where id=:organization_id"
-)
 public class Organization implements IOrganization {
 
     @Id

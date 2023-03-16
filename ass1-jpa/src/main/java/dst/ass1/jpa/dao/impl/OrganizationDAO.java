@@ -7,6 +7,7 @@ import dst.ass1.jpa.model.impl.Organization;
 import dst.ass1.jpa.util.Constants;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NamedQuery;
 import javax.persistence.NoResultException;
 
 public class OrganizationDAO extends BasicDAOImpl<IOrganization> implements IOrganizationDAO {
@@ -19,7 +20,9 @@ public class OrganizationDAO extends BasicDAOImpl<IOrganization> implements IOrg
     public IDriver findTopAndActiveDriverByOrganization(long organizationId) {
         try {
             return (IDriver) this.em.createNamedQuery(Constants.Q_TOP_DRIVER_OF_ORGANIZATION)
-                    .setParameter("organization_id", organizationId).getSingleResult();
+                    .setMaxResults(1)
+                    .setParameter("organization_id", organizationId)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
