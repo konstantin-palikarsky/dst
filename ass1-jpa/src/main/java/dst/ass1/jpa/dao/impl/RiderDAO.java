@@ -8,6 +8,7 @@ import dst.ass1.jpa.util.Constants;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +21,18 @@ public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
 
     @Override
     public List<IRider> findRidersByCurrencyValueAndCurrency(BigDecimal currencyValue, String currency) {
-        return null;
+        try {
+            var riderList = this.em.createNamedQuery(Constants.Q_RIDER_BY_SPENT_AND_CURRENCY)
+                    .setParameter("value", currencyValue)
+                    .setParameter("currency", currency)
+                    .getResultList();
+
+            //System.err.println(riderList.size());
+
+            return riderList;
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     @Override
@@ -29,7 +41,6 @@ public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
     }
 
     @Override
-
     public IRider findByEmail(String email) {
 
         try {

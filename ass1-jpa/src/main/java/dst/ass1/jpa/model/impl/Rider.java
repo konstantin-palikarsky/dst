@@ -3,10 +3,8 @@ package dst.ass1.jpa.model.impl;
 import dst.ass1.jpa.model.IRider;
 import dst.ass1.jpa.model.ITrip;
 import dst.ass1.jpa.util.Constants;
-import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 @Entity
@@ -14,6 +12,14 @@ import java.util.Collection;
 @NamedQuery(
         name = Constants.Q_RIDER_BY_EMAIL,
         query = "SELECT r FROM Rider r WHERE r.email=:email"
+)
+@NamedQuery(
+        name = Constants.Q_RIDER_BY_SPENT_AND_CURRENCY,
+        query = "SELECT r FROM Rider r " +
+                "JOIN r.trips as tr on (tr.rider.id=r.id) " +
+                "WHERE tr.tripInfo.total.currency=:currency " +
+                "GROUP BY r " +
+                "HAVING SUM(tr.tripInfo.total.currencyValue)>:value "
 )
 public class Rider extends PlatformUser implements IRider {
     @OneToMany(mappedBy = "rider", targetEntity = Trip.class)

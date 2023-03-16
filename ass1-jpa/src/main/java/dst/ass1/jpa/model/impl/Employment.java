@@ -2,6 +2,7 @@ package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.IEmployment;
 import dst.ass1.jpa.model.IEmploymentKey;
+import org.hibernate.annotations.Target;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -12,14 +13,15 @@ import java.util.Date;
 public class Employment implements IEmployment {
 
     @EmbeddedId
-    private EmploymentKey id;
+    @Target(EmploymentKey.class)
+    private IEmploymentKey id;
 
     private Date since;
 
     private Boolean active;
 
     @Override
-    public EmploymentKey getId() {
+    public IEmploymentKey getId() {
         return id;
     }
 
