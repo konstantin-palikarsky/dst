@@ -124,4 +124,14 @@ public class Trip implements ITrip {
     public void setStops(Collection<ILocation> stops) {
         this.stops = stops;
     }
+
+    @Override
+    public String toString() {
+        return "Trip{" +
+                "id=" + id +
+                ", tripInfo=" + tripInfo +
+                ", state=" + state +
+
+                '}';
+    }
 }

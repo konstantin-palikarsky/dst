@@ -99,4 +99,12 @@ public class TripInfo implements ITripInfo {
     public Integer getRiderRating() {
         return riderRating;
     }
+
+    @Override
+    public String toString() {
+        return "TripInfo{" +
+                "completed=" + completed +
+                ", distance=" + distance +
+                '}';
+    }
 }

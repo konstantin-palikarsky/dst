@@ -26,10 +26,7 @@ public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
     @Override
     public List<IRider> findRidersByCurrencyValueAndCurrency(BigDecimal currencyValue, String currency) {
         try {
-            var riderList = this.em.createNamedQuery(Constants.Q_RIDER_BY_SPENT_AND_CURRENCY)
-                    .setParameter("value", currencyValue)
-                    .setParameter("currency", currency)
-                    .getResultList();
+            var riderList = this.em.createNamedQuery(Constants.Q_RIDER_BY_SPENT_AND_CURRENCY).setParameter("value", currencyValue).setParameter("currency", currency).getResultList();
 
             //System.err.println(riderList.size());
 
@@ -46,39 +43,45 @@ public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
         CriteriaQuery<Rider> cq = cb.createQuery(Rider.class);
         Root<Rider> rider = cq.from(Rider.class);
 
-/*
-        Join<Rider, Trip> trip = rider.join("trips",JoinType.INNER);
+        Join<Rider, Trip> trip = rider.join("trips", JoinType.LEFT);
 
         Predicate predicate = null;
 
         if (start == null && end == null) {
             System.err.println("Should have right ");
         } else if (start == null) {
-            predicate = cb.lessThanOrEqualTo(trip.get("created"), end);
+            predicate = cb.lessThanOrEqualTo(trip.get("tripInfo").get("completed"), end);
         } else if (end == null) {
-            predicate = cb.greaterThanOrEqualTo(trip.get("created"), start);
+            predicate = cb.greaterThanOrEqualTo(trip.get("tripInfo").get("completed"), start);
 
         } else {
-            predicate = cb.between(trip.get("created"), start, end);
+            predicate = cb.between(trip.get("tripInfo").get("completed"), start, end);
         }
 
         cb.and(predicate);
-*/
 
-        cq.select(rider).where(cb.le(rider.get("avgRating"), 2.0));
+        cq.select(rider)
+                .where(
+                        cb.and(
+                                cb.le(rider.get("avgRating"), 2.0),
+                                cb.equal(trip.get("state"),TripState.CANCELLED)
+                        )
+                )
+                .groupBy(rider)
+                .orderBy(cb.desc(cb.count(trip.get("id"))));
 
         TypedQuery<Rider> q = em.createQuery(cq);
 
-
-        return new ArrayList<>(q.setMaxResults(3).getResultList());
+        List<IRider> resultList = new ArrayList<>(q.setMaxResults(3).getResultList());
+        System.err.println(resultList);
+        return resultList;
     }
 
     @Override
     public IRider findByEmail(String email) {
 
         try {
-            return (IRider) this.em.createNamedQuery(Constants.Q_RIDER_BY_EMAIL)
-                    .setParameter("email", email).getSingleResult();
+            return (IRider) this.em.createNamedQuery(Constants.Q_RIDER_BY_EMAIL).setParameter("email", email).getSingleResult();
         } catch (NoResultException e) {
             return null;
         }

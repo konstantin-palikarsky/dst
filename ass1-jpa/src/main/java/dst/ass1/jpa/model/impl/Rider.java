@@ -91,4 +91,11 @@ public class Rider extends PlatformUser implements IRider {
     public void setBankCode(String bankCode) {
         this.bankCode = bankCode;
     }
+
+    @Override
+    public String toString() {
+        return "Rider{" +
+                "email='" + email + '\'' + trips.toString()+
+                '}';
+    }
 }
