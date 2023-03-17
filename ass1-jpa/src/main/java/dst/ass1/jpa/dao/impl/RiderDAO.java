@@ -39,32 +39,30 @@ public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
     @Override
     public List<IRider> findTopThreeRidersWithMostCanceledTripsAndRatingLowerEqualTwo(Date start, Date end) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-
         CriteriaQuery<Rider> cq = cb.createQuery(Rider.class);
         Root<Rider> rider = cq.from(Rider.class);
 
         Join<Rider, Trip> trip = rider.join("trips", JoinType.LEFT);
 
-        Predicate predicate = null;
+        //Always true predicates
+        Predicate startPredicate = cb.and();
+        Predicate endPredicate = cb.and();
 
-        if (start == null && end == null) {
-            System.err.println("Should have right ");
-        } else if (start == null) {
-            predicate = cb.lessThanOrEqualTo(trip.get("tripInfo").get("completed"), end);
-        } else if (end == null) {
-            predicate = cb.greaterThanOrEqualTo(trip.get("tripInfo").get("completed"), start);
-
-        } else {
-            predicate = cb.between(trip.get("tripInfo").get("completed"), start, end);
+        if (start != null) {
+            startPredicate = cb.greaterThanOrEqualTo(trip.get("created"), start);
         }
-
-        cb.and(predicate);
+        if (end != null) {
+            endPredicate = cb.lessThanOrEqualTo(trip.get("created"), end);
+        }
 
         cq.select(rider)
                 .where(
                         cb.and(
-                                cb.le(rider.get("avgRating"), 2.0),
-                                cb.equal(trip.get("state"),TripState.CANCELLED)
+                                cb.and(startPredicate, endPredicate),
+                                cb.and(
+                                        cb.le(rider.get("avgRating"), 2.0),
+                                        cb.equal(trip.get("state"), TripState.CANCELLED)
+                                )
                         )
                 )
                 .groupBy(rider)
@@ -73,7 +71,6 @@ public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
         TypedQuery<Rider> q = em.createQuery(cq);
 
         List<IRider> resultList = new ArrayList<>(q.setMaxResults(3).getResultList());
-        System.err.println(resultList);
         return resultList;
     }
 
