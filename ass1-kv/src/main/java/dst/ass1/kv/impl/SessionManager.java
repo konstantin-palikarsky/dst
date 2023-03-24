@@ -4,13 +4,20 @@ import dst.ass1.kv.ISessionManager;
 import dst.ass1.kv.SessionCreationFailedException;
 import dst.ass1.kv.SessionNotFoundException;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Response;
 import redis.clients.jedis.Transaction;
+import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.resps.ScanResult;
 
 import java.util.HashMap;
 import java.util.UUID;
 
+import static redis.clients.jedis.params.ScanParams.SCAN_POINTER_START;
+
 public class SessionManager implements ISessionManager {
     private static final String USERID_KEY = "userId";
+    private static final String USER_SET_KEY = "users";
+
     JedisPool redisPool;
 
     public SessionManager(String host, int port) {
@@ -24,16 +31,12 @@ public class SessionManager implements ISessionManager {
     @Override
     public String createSession(Long userId, int timeToLive) throws SessionCreationFailedException {
 
-        var sessionToken = UUID.randomUUID().toString();
-        var hashVariables = new HashMap<String, String>();
-        hashVariables.put(USERID_KEY, userId.toString());
+        var sessionToken = "";
 
         var redisClient = redisPool.getResource();
-        redisClient.watch(sessionToken);
 
         try (Transaction t = redisClient.multi()) {
-            redisClient.hset(sessionToken, hashVariables);
-            redisClient.expire(sessionToken, timeToLive);
+            sessionToken = createSession(t, userId.toString(), timeToLive);
             if (t.exec() == null) {
                 throw new SessionCreationFailedException();
             }
@@ -86,7 +89,53 @@ public class SessionManager implements ISessionManager {
 
     @Override
     public String requireSession(Long userId, int timeToLive) throws SessionCreationFailedException {
-        return null;
+
+        var redisClient = redisPool.getResource();
+        var sessionToken = "";
+
+        redisClient.watch(USER_SET_KEY, userId.toString());
+
+
+        boolean exists = false;
+        ScanParams scanParams = new ScanParams().match(userId +":*");
+        String cur = SCAN_POINTER_START;
+        do {
+            ScanResult<String> scanResult = redisClient.scan(cur, scanParams, "hash");
+
+            if (!scanResult.getResult().isEmpty()) {
+                exists = true;
+                sessionToken = scanResult.getResult().get(0);
+            }
+
+            cur = scanResult.getCursor();
+        } while (!cur.equals(SCAN_POINTER_START) && !exists);
+
+
+        try (Transaction t = redisClient.multi()) {
+
+            if (!exists) {
+
+                sessionToken = createSession(t, userId.toString(), timeToLive);
+
+                if (t.exec() == null) {
+                    throw new SessionCreationFailedException();
+                }
+
+            }
+        }
+
+        return sessionToken;
+    }
+
+    private String createSession(Transaction t, String userId, int timeToLive) {
+        var sessionToken = userId + ":" + UUID.randomUUID();
+
+        var hashVariables = new HashMap<String, String>();
+        hashVariables.put(USERID_KEY, userId.toString());
+
+        t.hset(sessionToken, hashVariables);
+        t.expire(sessionToken, timeToLive);
+        return sessionToken;
     }
 
     @Override
