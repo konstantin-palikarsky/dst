@@ -16,7 +16,6 @@ import static redis.clients.jedis.params.ScanParams.SCAN_POINTER_START;
 
 public class SessionManager implements ISessionManager {
     private static final String USERID_KEY = "userId";
-    private static final String USER_SET_KEY = "users";
 
     JedisPool redisPool;
 
@@ -92,12 +91,10 @@ public class SessionManager implements ISessionManager {
 
         var redisClient = redisPool.getResource();
         var sessionToken = "";
-
-        redisClient.watch(USER_SET_KEY, userId.toString());
-
-
         boolean exists = false;
-        ScanParams scanParams = new ScanParams().match(userId +":*");
+
+
+        ScanParams scanParams = new ScanParams().match(userId + ":*");
         String cur = SCAN_POINTER_START;
         do {
             ScanResult<String> scanResult = redisClient.scan(cur, scanParams, "hash");
@@ -105,14 +102,15 @@ public class SessionManager implements ISessionManager {
             if (!scanResult.getResult().isEmpty()) {
                 exists = true;
                 sessionToken = scanResult.getResult().get(0);
+                redisClient.watch(sessionToken);
             }
 
             cur = scanResult.getCursor();
         } while (!cur.equals(SCAN_POINTER_START) && !exists);
 
 
-        try (Transaction t = redisClient.multi()) {
 
+        try (Transaction t = redisClient.multi()) {
             if (!exists) {
 
                 sessionToken = createSession(t, userId.toString(), timeToLive);
@@ -131,7 +129,7 @@ public class SessionManager implements ISessionManager {
         var sessionToken = userId + ":" + UUID.randomUUID();
 
         var hashVariables = new HashMap<String, String>();
-        hashVariables.put(USERID_KEY, userId.toString());
+        hashVariables.put(USERID_KEY, userId);
 
         t.hset(sessionToken, hashVariables);
         t.expire(sessionToken, timeToLive);
