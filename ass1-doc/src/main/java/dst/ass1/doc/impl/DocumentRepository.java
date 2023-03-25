@@ -3,6 +3,8 @@ package dst.ass1.doc.impl;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.IndexOptions;
+import com.mongodb.client.model.Indexes;
 import dst.ass1.doc.IDocumentRepository;
 import dst.ass1.jpa.model.ILocation;
 import dst.ass1.jpa.util.Constants;
@@ -12,17 +14,21 @@ import java.util.Map;
 
 public class DocumentRepository implements IDocumentRepository, AutoCloseable {
 
-    private final MongoClient mongoClient ;
-    private final MongoDatabase db;
+    private final MongoClient mongoClient;
+    private final MongoCollection<Document> collection;
 
-    public DocumentRepository(){
+    public DocumentRepository() {
         mongoClient = new MongoClient();
-        db = mongoClient.getDatabase(Constants.MONGO_DB_NAME);
+        MongoDatabase db = mongoClient.getDatabase(Constants.MONGO_DB_NAME);
+        collection = db.getCollection(Constants.COLL_LOCATION_DATA);
+
+        //TODO switch to haystack index
+        collection.createIndex(Indexes.geo2dsphere("geo.coordinates"));
+        collection.createIndex(Indexes.ascending("location_id"));
     }
 
     @Override
     public void insert(ILocation location, Map<String, Object> locationProperties) {
-        MongoCollection<Document> collection = db.getCollection(Constants.COLL_LOCATION_DATA);
 
         Document doc = new Document();
         locationProperties.put("name", location.getName());
@@ -33,7 +39,7 @@ public class DocumentRepository implements IDocumentRepository, AutoCloseable {
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         mongoClient.close();
     }
 }

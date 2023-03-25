@@ -18,7 +18,6 @@ public class ModelFactory implements IModelFactory {
 
     @Override
     public IDriver createDriver() {
-        // TODO
         var driver = new Driver();
         driver.setEmployments(new LinkedList<>());
 
@@ -27,20 +26,17 @@ public class ModelFactory implements IModelFactory {
 
     @Override
     public IEmployment createEmployment() {
-        // TODO
 
         return new Employment();
     }
 
     @Override
     public IEmploymentKey createEmploymentKey() {
-        // TODO
         return new EmploymentKey();
     }
 
     @Override
     public ILocation createLocation() {
-        // TODO
 
 
         return new Location();
@@ -48,13 +44,11 @@ public class ModelFactory implements IModelFactory {
 
     @Override
     public IMatch createMatch() {
-        // TODO
         return new Match();
     }
 
     @Override
     public IMoney createMoney() {
-        // TODO
         return new Money();
     }
 
@@ -65,13 +59,11 @@ public class ModelFactory implements IModelFactory {
         organization.setParts(new LinkedList<>());
         organization.setPartOf(new LinkedList<>());
         organization.setVehicles(new LinkedList<>());
-        // TODO
         return organization;
     }
 
     @Override
     public IRider createRider() {
-        // TODO
         var rider = new Rider();
         rider.setTrips(new LinkedList<>());
 
@@ -80,7 +72,6 @@ public class ModelFactory implements IModelFactory {
 
     @Override
     public ITrip createTrip() {
-        // TODO
         var trip = new Trip();
         trip.setStops(new LinkedList<>());
         trip.setDestination(new Location());
@@ -90,13 +81,11 @@ public class ModelFactory implements IModelFactory {
 
     @Override
     public ITripInfo createTripInfo() {
-        // TODO
         return new TripInfo();
     }
 
     @Override
     public IVehicle createVehicle() {
-        // TODO
         return new Vehicle();
     }
 }
