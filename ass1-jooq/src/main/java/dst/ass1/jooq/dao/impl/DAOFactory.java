@@ -5,10 +5,14 @@ import org.jooq.DSLContext;
 
 public class DAOFactory implements IDAOFactory {
 
-  public DAOFactory(DSLContext dlsContext) {}
+    private final DSLContext dslContext;
 
-  @Override
-  public IRiderPreferenceDAO createRiderPreferenceDao() {
-    return null;
-  }
+    public DAOFactory(DSLContext dslContext) {
+        this.dslContext = dslContext;
+    }
+
+    @Override
+    public IRiderPreferenceDAO createRiderPreferenceDao() {
+        return new RiderPreferenceDAO(this.dslContext);
+    }
 }
