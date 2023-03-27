@@ -14,6 +14,8 @@ import java.util.List;
 
 public class RiderPreferenceDAO implements IRiderPreferenceDAO {
     private final DSLContext context;
+    private static final RiderPreference RIDER_PREFERENCE = RiderPreference.RIDER_PREFERENCE;
+    private static final Preference PREFERENCE = Preference.PREFERENCE;
 
     public RiderPreferenceDAO(DSLContext dslContext) {
         this.context = dslContext;
@@ -23,27 +25,27 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
     @Override
     public IRiderPreference findById(Long id) {
         RiderPreferenceRecord riderRecord =
-                context.fetchOne(RiderPreference.RIDER_PREFERENCE, RiderPreference.RIDER_PREFERENCE.RIDER_ID
+                context.fetchOne(RIDER_PREFERENCE, RIDER_PREFERENCE.RIDER_ID
                         .eq(id));
 
         if (riderRecord == null) {
             return null;
         }
         var specificPreferences =
-                context.fetch(Preference.PREFERENCE,
-                        Preference.PREFERENCE.RIDER_ID.eq(id));
+                context.fetch(PREFERENCE,
+                        PREFERENCE.RIDER_ID.eq(id));
 
         var rider = new dst.ass1.jooq.model.impl.RiderPreference();
-        rider.setRiderId(riderRecord.get(RiderPreference.RIDER_PREFERENCE.RIDER_ID));
-        rider.setArea(riderRecord.get(RiderPreference.RIDER_PREFERENCE.AREA));
-        rider.setVehicleClass(riderRecord.get(RiderPreference.RIDER_PREFERENCE.VEHICLE_CLASS));
+        rider.setRiderId(riderRecord.get(RIDER_PREFERENCE.RIDER_ID));
+        rider.setArea(riderRecord.get(RIDER_PREFERENCE.AREA));
+        rider.setVehicleClass(riderRecord.get(RIDER_PREFERENCE.VEHICLE_CLASS));
 
         if (specificPreferences.isNotEmpty()) {
             var preferenceMap = new HashMap<String, String>();
 
             for (PreferenceRecord preferenceRecord : specificPreferences) {
-                preferenceMap.put(preferenceRecord.get(Preference.PREFERENCE.PREF_KEY),
-                        preferenceRecord.get(Preference.PREFERENCE.PREF_VALUE));
+                preferenceMap.put(preferenceRecord.get(PREFERENCE.PREF_KEY),
+                        preferenceRecord.get(PREFERENCE.PREF_VALUE));
             }
 
             rider.setPreferences(preferenceMap);
@@ -59,10 +61,6 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
 
     @Override
     public IRiderPreference insert(IRiderPreference model) {
-        var RIDER_PREFERENCE = RiderPreference.RIDER_PREFERENCE;
-        var PREFERENCE = Preference.PREFERENCE;
-
-
         context.insertInto(RIDER_PREFERENCE, RIDER_PREFERENCE.RIDER_ID, RIDER_PREFERENCE.AREA,
                         RIDER_PREFERENCE.VEHICLE_CLASS)
                 .values(model.getRiderId(), model.getArea(), model.getVehicleClass()).execute();
@@ -81,11 +79,29 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
 
     @Override
     public void delete(Long id) {
-
+        context.delete(RIDER_PREFERENCE)
+                .where(RIDER_PREFERENCE.RIDER_ID.eq(id)).execute();
     }
 
     @Override
     public void updatePreferences(IRiderPreference model) {
+
+
+        var modelPreferences = model.getPreferences();
+        var riderId = model.getRiderId();
+
+        for (String key : modelPreferences.keySet()
+        ) {
+            context.mergeInto(PREFERENCE)
+                    .using(context.selectOne())
+                    .on(PREFERENCE.PREF_KEY.eq(key))
+                    .whenMatchedThenUpdate()
+                    .set(PREFERENCE.PREF_VALUE, modelPreferences.get(key))
+                    .whenNotMatchedThenInsert(PREFERENCE.PREF_KEY, PREFERENCE.PREF_VALUE, PREFERENCE.RIDER_ID)
+                    .values(key, modelPreferences.get(key), riderId)
+                    .execute();
+        }
+
 
     }
 }
