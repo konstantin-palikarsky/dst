@@ -5,6 +5,8 @@ import com.mongodb.client.model.*;
 import dst.ass1.doc.IDocumentQuery;
 import dst.ass1.jpa.util.Constants;
 import org.bson.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +14,7 @@ import java.util.List;
 
 public class DocumentQuery implements IDocumentQuery {
     private final MongoCollection<Document> collection;
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentQuery.class);
 
     public DocumentQuery(MongoDatabase db) {
         collection = db.getCollection(Constants.COLL_LOCATION_DATA);
@@ -20,6 +22,7 @@ public class DocumentQuery implements IDocumentQuery {
 
     @Override
     public List<Document> getAverageOpeningHoursOfRestaurants() {
+        LOGGER.info("MongoDB query for average opening hours of restaurants");
 
         var docs = collection.aggregate(
                 Arrays.asList(
@@ -47,6 +50,8 @@ public class DocumentQuery implements IDocumentQuery {
 
     @Override
     public List<Document> findDocumentsByNameWithinPolygon(String name, List<List<Double>> polygon) {
+        LOGGER.info("MongoDB query by name similar to: "+name+" and within Polygon: "+polygon);
+
         var docs = collection.find(
                 Filters.and(
                         Filters.regex("name", "^.*" + name + ".*"),
@@ -58,6 +63,8 @@ public class DocumentQuery implements IDocumentQuery {
 
     @Override
     public List<Document> findDocumentsByType(String type) {
+        LOGGER.info("MongoDB query by type: "+type);
+
         var docs = collection.find(Filters.eq("type", type));
 
         return documentsToList(docs);
@@ -66,11 +73,15 @@ public class DocumentQuery implements IDocumentQuery {
     private List<Document> documentsToList(MongoIterable<Document> docs) {
         var resultList = new ArrayList<Document>();
 
+
         try (MongoCursor<Document> cursor = docs.iterator()) {
             while (cursor.hasNext()) {
-                resultList.add(cursor.next());
+                var document = cursor.next();
+                resultList.add(document);
             }
         }
+        LOGGER.info("Results: "+ resultList);
+
 
         return resultList;
     }
