@@ -4,12 +4,7 @@ import dst.ass1.jooq.dao.IRiderPreferenceDAO;
 import dst.ass1.jooq.model.IRiderPreference;
 import dst.ass1.jooq.model.public_.tables.Preference;
 import dst.ass1.jooq.model.public_.tables.RiderPreference;
-import dst.ass1.jooq.model.public_.tables.records.PreferenceRecord;
-import dst.ass1.jooq.model.public_.tables.records.RiderPreferenceRecord;
-import org.jooq.Configuration;
-import org.jooq.DSLContext;
-import org.jooq.Record2;
-import org.jooq.Record4;
+import org.jooq.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,8 +25,7 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
     @Override
     public List<IRiderPreference> findAll() {
 
-
-        var queryOutput =
+        var riderRecords =
                 context.select(
                                 RIDER_PREFERENCE.RIDER_ID,
                                 RIDER_PREFERENCE.AREA,
@@ -47,40 +41,13 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
                         .groupBy(RIDER_PREFERENCE)
                         .fetch();
 
-        var resultList = new ArrayList<IRiderPreference>();
-
-        queryOutput.forEach(
-                x -> {
-                    var rpref = new dst.ass1.jooq.model.impl.RiderPreference();
-
-                    rpref.setRiderId(x.get(RIDER_PREFERENCE.RIDER_ID));
-                    rpref.setVehicleClass(x.get(RIDER_PREFERENCE.VEHICLE_CLASS));
-                    rpref.setArea(x.get(RIDER_PREFERENCE.AREA));
-
-                    List<Record2<String, String>> preferences = (List<Record2<String, String>>) x.get("preferences");
-
-                    if (preferences == null) {
-                        resultList.add(rpref);
-                        return;
-                    }
-                    var preferenceMap = new HashMap<String, String>();
-                    for (Record2<String, String> preferenceTuple : preferences) {
-                        preferenceMap.put(preferenceTuple.value1(), preferenceTuple.value2());
-
-                    }
-                    rpref.setPreferences(preferenceMap);
-                    resultList.add(rpref);
-                }
-        );
-
-        return resultList;
+        return new ArrayList<>(riderRecords.map(this::mapRecordToRider));
     }
 
     @Override
     public IRiderPreference findById(Long id) {
-        var rider = new dst.ass1.jooq.model.impl.RiderPreference();
 
-        var query =
+        var riderRecord =
                 context.select(
                                 RIDER_PREFERENCE.RIDER_ID,
                                 RIDER_PREFERENCE.AREA,
@@ -97,28 +64,11 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
                         .groupBy(RIDER_PREFERENCE)
                         .fetchOne();
 
-        if (query == null) {
+        if (riderRecord == null) {
             return null;
         }
 
-        rider.setVehicleClass(query.get(RIDER_PREFERENCE.VEHICLE_CLASS));
-        rider.setArea(query.get(RIDER_PREFERENCE.AREA));
-        rider.setRiderId(query.get(RIDER_PREFERENCE.RIDER_ID));
-
-        List<Record2<String, String>> preferences = (List<Record2<String, String>>) query.get("preferences");
-
-        if (preferences == null) {
-            return rider;
-        }
-
-        var preferenceMap = new HashMap<String, String>();
-
-        for (Record2<String, String> preferenceTuple : preferences) {
-            preferenceMap.put(preferenceTuple.value1(), preferenceTuple.value2());
-        }
-
-        rider.setPreferences(preferenceMap);
-        return rider;
+        return mapRecordToRider(riderRecord);
     }
 
     @Override
@@ -169,5 +119,29 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
                         .execute();
             }
         });
+    }
+
+    private IRiderPreference
+    mapRecordToRider(Record4<Long, String, String, Result<Record2<String, String>>> riderResult) {
+
+        var rider = new dst.ass1.jooq.model.impl.RiderPreference();
+
+        rider.setRiderId(riderResult.get(RIDER_PREFERENCE.RIDER_ID));
+        rider.setVehicleClass(riderResult.get(RIDER_PREFERENCE.VEHICLE_CLASS));
+        rider.setArea(riderResult.get(RIDER_PREFERENCE.AREA));
+
+        var preferences = (List<Record2<String, String>>) riderResult.get("preferences");
+
+        if (preferences == null) {
+            return rider;
+        }
+
+        var preferenceMap = new HashMap<String, String>();
+        for (Record2<String, String> preferenceTuple : preferences) {
+            preferenceMap.put(preferenceTuple.value1(), preferenceTuple.value2());
+
+        }
+        rider.setPreferences(preferenceMap);
+        return rider;
     }
 }
