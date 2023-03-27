@@ -72,4 +72,14 @@ public class RiderPreference implements IRiderPreference {
         result = 31 * result + (preferences != null ? preferences.hashCode() : 0);
         return result;
     }
+
+    @Override
+    public String toString() {
+        return "RiderPreference{" +
+                "area='" + area + '\'' +
+                ", vehicleClass='" + vehicleClass + '\'' +
+                ", riderId=" + riderId +
+                ", preferences=" + preferences +
+                '}';
+    }
 }

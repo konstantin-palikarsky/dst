@@ -7,9 +7,14 @@ import dst.ass1.jooq.model.public_.tables.RiderPreference;
 import dst.ass1.jooq.model.public_.tables.records.PreferenceRecord;
 import dst.ass1.jooq.model.public_.tables.records.RiderPreferenceRecord;
 import org.jooq.DSLContext;
+import org.jooq.Record2;
+import org.jooq.Record4;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static org.jooq.impl.DSL.*;
 
 
 public class RiderPreferenceDAO implements IRiderPreferenceDAO {
@@ -21,6 +26,55 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
         this.context = dslContext;
     }
 
+
+    @Override
+    public List<IRiderPreference> findAll() {
+
+
+        var queryOutput =
+                context.select(
+                                RIDER_PREFERENCE.RIDER_ID,
+                                RIDER_PREFERENCE.AREA,
+                                RIDER_PREFERENCE.VEHICLE_CLASS,
+                                multisetAgg(
+                                                PREFERENCE.PREF_KEY,
+                                                PREFERENCE.PREF_VALUE
+                                ).as("preferences")
+                        )
+                        .from(RIDER_PREFERENCE)
+                        .join(PREFERENCE)
+                        .on(PREFERENCE.RIDER_ID.eq(RIDER_PREFERENCE.RIDER_ID))
+                        .groupBy(RIDER_PREFERENCE)
+                        .fetch();
+
+        var resultList = new ArrayList<IRiderPreference>();
+
+        queryOutput.forEach(
+                x->{
+                    var rpref = new dst.ass1.jooq.model.impl.RiderPreference();
+
+                    rpref.setRiderId(x.get(RIDER_PREFERENCE.RIDER_ID));
+                    rpref.setVehicleClass(x.get(RIDER_PREFERENCE.VEHICLE_CLASS));
+                    rpref.setArea(x.get(RIDER_PREFERENCE.AREA));
+
+                    List<Record2<String, String>> preferences = (List<Record2<String, String>>) x.get("preferences");
+
+                    if (preferences==null){
+                        resultList.add(rpref);
+                        return;
+                    }
+                    var preferenceMap = new HashMap<String,String>();
+                    for (Record2<String,String> preferenceTuple:preferences) {
+                        preferenceMap.put(preferenceTuple.value1(),preferenceTuple.value2());
+
+                    }
+                    rpref.setPreferences(preferenceMap);
+                    resultList.add(rpref);
+                }
+        );
+
+        return resultList;
+    }
 
     @Override
     public IRiderPreference findById(Long id) {
@@ -52,11 +106,6 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
         }
 
         return rider;
-    }
-
-    @Override
-    public List<IRiderPreference> findAll() {
-        return null;
     }
 
     @Override
