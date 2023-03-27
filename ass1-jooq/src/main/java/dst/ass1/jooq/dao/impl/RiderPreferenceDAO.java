@@ -6,16 +6,18 @@ import org.jooq.DSLContext;
 
 import java.util.List;
 
+
 public class RiderPreferenceDAO implements IRiderPreferenceDAO {
-    private final DSLContext dslContext;
+    private final DSLContext context;
 
     public RiderPreferenceDAO(DSLContext dslContext) {
-        this.dslContext = dslContext;
+        this.context = dslContext;
     }
 
 
     @Override
     public IRiderPreference findById(Long id) {
+
         return null;
     }
 

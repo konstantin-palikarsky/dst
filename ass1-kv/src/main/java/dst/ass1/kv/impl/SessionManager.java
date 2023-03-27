@@ -10,6 +10,7 @@ import redis.clients.jedis.params.ScanParams;
 import redis.clients.jedis.resps.ScanResult;
 
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.UUID;
 
 import static redis.clients.jedis.params.ScanParams.SCAN_POINTER_START;
@@ -90,37 +91,23 @@ public class SessionManager implements ISessionManager {
     public String requireSession(Long userId, int timeToLive) throws SessionCreationFailedException {
 
         var redisClient = redisPool.getResource();
-        var sessionToken = "";
-        boolean exists = false;
+        String sessionToken;
 
-
-        ScanParams scanParams = new ScanParams().match(userId + ":*");
-        String cur = SCAN_POINTER_START;
-        do {
-            ScanResult<String> scanResult = redisClient.scan(cur, scanParams, "hash");
-
-            if (!scanResult.getResult().isEmpty()) {
-                exists = true;
-                sessionToken = scanResult.getResult().get(0);
-                redisClient.watch(sessionToken);
-            }
-
-            cur = scanResult.getCursor();
-        } while (!cur.equals(SCAN_POINTER_START) && !exists);
-
+        redisClient.watch(userId.toString());
+        var potentialKey = redisClient.get(userId.toString());
 
 
         try (Transaction t = redisClient.multi()) {
-            if (!exists) {
-
-                sessionToken = createSession(t, userId.toString(), timeToLive);
-
-                if (t.exec() == null) {
-                    throw new SessionCreationFailedException();
-                }
-
+            sessionToken =
+                    Objects.requireNonNullElseGet(
+                            potentialKey,
+                            () -> createSession(t, userId.toString(), timeToLive)
+                    );
+            if (t.exec() == null) {
+                throw new SessionCreationFailedException();
             }
         }
+
 
         return sessionToken;
     }
@@ -130,6 +117,9 @@ public class SessionManager implements ISessionManager {
 
         var hashVariables = new HashMap<String, String>();
         hashVariables.put(USERID_KEY, userId);
+
+        t.set(userId, sessionToken);
+        t.expire(userId, timeToLive);
 
         t.hset(sessionToken, hashVariables);
         t.expire(sessionToken, timeToLive);
