@@ -6,6 +6,7 @@ import dst.ass1.jooq.model.public_.tables.Preference;
 import dst.ass1.jooq.model.public_.tables.RiderPreference;
 import dst.ass1.jooq.model.public_.tables.records.PreferenceRecord;
 import dst.ass1.jooq.model.public_.tables.records.RiderPreferenceRecord;
+import org.jooq.Configuration;
 import org.jooq.DSLContext;
 import org.jooq.Record2;
 import org.jooq.Record4;
@@ -26,7 +27,6 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
         this.context = dslContext;
     }
 
-
     @Override
     public List<IRiderPreference> findAll() {
 
@@ -37,8 +37,8 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
                                 RIDER_PREFERENCE.AREA,
                                 RIDER_PREFERENCE.VEHICLE_CLASS,
                                 multisetAgg(
-                                                PREFERENCE.PREF_KEY,
-                                                PREFERENCE.PREF_VALUE
+                                        PREFERENCE.PREF_KEY,
+                                        PREFERENCE.PREF_VALUE
                                 ).as("preferences")
                         )
                         .from(RIDER_PREFERENCE)
@@ -50,7 +50,7 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
         var resultList = new ArrayList<IRiderPreference>();
 
         queryOutput.forEach(
-                x->{
+                x -> {
                     var rpref = new dst.ass1.jooq.model.impl.RiderPreference();
 
                     rpref.setRiderId(x.get(RIDER_PREFERENCE.RIDER_ID));
@@ -59,13 +59,13 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
 
                     List<Record2<String, String>> preferences = (List<Record2<String, String>>) x.get("preferences");
 
-                    if (preferences==null){
+                    if (preferences == null) {
                         resultList.add(rpref);
                         return;
                     }
-                    var preferenceMap = new HashMap<String,String>();
-                    for (Record2<String,String> preferenceTuple:preferences) {
-                        preferenceMap.put(preferenceTuple.value1(),preferenceTuple.value2());
+                    var preferenceMap = new HashMap<String, String>();
+                    for (Record2<String, String> preferenceTuple : preferences) {
+                        preferenceMap.put(preferenceTuple.value1(), preferenceTuple.value2());
 
                     }
                     rpref.setPreferences(preferenceMap);
@@ -78,50 +78,68 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
 
     @Override
     public IRiderPreference findById(Long id) {
-        RiderPreferenceRecord riderRecord =
-                context.fetchOne(RIDER_PREFERENCE, RIDER_PREFERENCE.RIDER_ID
-                        .eq(id));
+        var rider = new dst.ass1.jooq.model.impl.RiderPreference();
 
-        if (riderRecord == null) {
+        var query =
+                context.select(
+                                RIDER_PREFERENCE.RIDER_ID,
+                                RIDER_PREFERENCE.AREA,
+                                RIDER_PREFERENCE.VEHICLE_CLASS,
+                                multisetAgg(
+                                        PREFERENCE.PREF_KEY,
+                                        PREFERENCE.PREF_VALUE
+                                ).as("preferences")
+                        )
+                        .from(RIDER_PREFERENCE)
+                        .join(PREFERENCE)
+                        .on(PREFERENCE.RIDER_ID.eq(RIDER_PREFERENCE.RIDER_ID))
+                        .where(RIDER_PREFERENCE.RIDER_ID.eq(id))
+                        .groupBy(RIDER_PREFERENCE)
+                        .fetchOne();
+
+        if (query == null) {
             return null;
         }
-        var specificPreferences =
-                context.fetch(PREFERENCE,
-                        PREFERENCE.RIDER_ID.eq(id));
 
-        var rider = new dst.ass1.jooq.model.impl.RiderPreference();
-        rider.setRiderId(riderRecord.get(RIDER_PREFERENCE.RIDER_ID));
-        rider.setArea(riderRecord.get(RIDER_PREFERENCE.AREA));
-        rider.setVehicleClass(riderRecord.get(RIDER_PREFERENCE.VEHICLE_CLASS));
+        rider.setVehicleClass(query.get(RIDER_PREFERENCE.VEHICLE_CLASS));
+        rider.setArea(query.get(RIDER_PREFERENCE.AREA));
+        rider.setRiderId(query.get(RIDER_PREFERENCE.RIDER_ID));
 
-        if (specificPreferences.isNotEmpty()) {
-            var preferenceMap = new HashMap<String, String>();
+        List<Record2<String, String>> preferences = (List<Record2<String, String>>) query.get("preferences");
 
-            for (PreferenceRecord preferenceRecord : specificPreferences) {
-                preferenceMap.put(preferenceRecord.get(PREFERENCE.PREF_KEY),
-                        preferenceRecord.get(PREFERENCE.PREF_VALUE));
-            }
-
-            rider.setPreferences(preferenceMap);
+        if (preferences == null) {
+            return rider;
         }
 
+        var preferenceMap = new HashMap<String, String>();
+
+        for (Record2<String, String> preferenceTuple : preferences) {
+            preferenceMap.put(preferenceTuple.value1(), preferenceTuple.value2());
+        }
+
+        rider.setPreferences(preferenceMap);
         return rider;
     }
 
     @Override
     public IRiderPreference insert(IRiderPreference model) {
-        context.insertInto(RIDER_PREFERENCE, RIDER_PREFERENCE.RIDER_ID, RIDER_PREFERENCE.AREA,
-                        RIDER_PREFERENCE.VEHICLE_CLASS)
-                .values(model.getRiderId(), model.getArea(), model.getVehicleClass()).execute();
 
-        var modelPreferences = model.getPreferences();
+        context.transaction((Configuration trx) -> {
 
-        for (String key : modelPreferences.keySet()
-        ) {
-            context.insertInto(PREFERENCE,
-                            PREFERENCE.RIDER_ID, PREFERENCE.PREF_KEY, PREFERENCE.PREF_VALUE)
-                    .values(model.getRiderId(), key, modelPreferences.get(key)).execute();
-        }
+            trx.dsl().insertInto(RIDER_PREFERENCE, RIDER_PREFERENCE.RIDER_ID, RIDER_PREFERENCE.AREA,
+                            RIDER_PREFERENCE.VEHICLE_CLASS)
+                    .values(model.getRiderId(), model.getArea(), model.getVehicleClass()).execute();
+
+            var modelPreferences = model.getPreferences();
+
+            for (String key : modelPreferences.keySet()
+            ) {
+                trx.dsl().insertInto(PREFERENCE,
+                                PREFERENCE.RIDER_ID, PREFERENCE.PREF_KEY, PREFERENCE.PREF_VALUE)
+                        .values(model.getRiderId(), key, modelPreferences.get(key)).execute();
+            }
+
+        });
 
         return model;
     }
@@ -135,22 +153,21 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
     @Override
     public void updatePreferences(IRiderPreference model) {
 
-
         var modelPreferences = model.getPreferences();
         var riderId = model.getRiderId();
 
-        for (String key : modelPreferences.keySet()
-        ) {
-            context.mergeInto(PREFERENCE)
-                    .using(context.selectOne())
-                    .on(PREFERENCE.PREF_KEY.eq(key))
-                    .whenMatchedThenUpdate()
-                    .set(PREFERENCE.PREF_VALUE, modelPreferences.get(key))
-                    .whenNotMatchedThenInsert(PREFERENCE.PREF_KEY, PREFERENCE.PREF_VALUE, PREFERENCE.RIDER_ID)
-                    .values(key, modelPreferences.get(key), riderId)
-                    .execute();
-        }
-
-
+        context.transaction((Configuration trx) -> {
+            for (String key : modelPreferences.keySet()
+            ) {
+                trx.dsl().mergeInto(PREFERENCE)
+                        .using(context.selectOne())
+                        .on(PREFERENCE.PREF_KEY.eq(key))
+                        .whenMatchedThenUpdate()
+                        .set(PREFERENCE.PREF_VALUE, modelPreferences.get(key))
+                        .whenNotMatchedThenInsert(PREFERENCE.PREF_KEY, PREFERENCE.PREF_VALUE, PREFERENCE.RIDER_ID)
+                        .values(key, modelPreferences.get(key), riderId)
+                        .execute();
+            }
+        });
     }
 }
