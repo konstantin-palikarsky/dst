@@ -3,6 +3,7 @@ package dst.ass1.jooq.model.impl;
 import dst.ass1.jooq.model.IRiderPreference;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class RiderPreference implements IRiderPreference {
     private String area;
@@ -48,5 +49,27 @@ public class RiderPreference implements IRiderPreference {
     @Override
     public Map<String, String> getPreferences() {
         return preferences;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RiderPreference that = (RiderPreference) o;
+
+        if (!Objects.equals(area, that.area)) return false;
+        if (!Objects.equals(vehicleClass, that.vehicleClass)) return false;
+        if (!Objects.equals(riderId, that.riderId)) return false;
+        return Objects.equals(preferences, that.preferences);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = area != null ? area.hashCode() : 0;
+        result = 31 * result + (vehicleClass != null ? vehicleClass.hashCode() : 0);
+        result = 31 * result + (riderId != null ? riderId.hashCode() : 0);
+        result = 31 * result + (preferences != null ? preferences.hashCode() : 0);
+        return result;
     }
 }

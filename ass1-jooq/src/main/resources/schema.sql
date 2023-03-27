@@ -11,19 +11,18 @@ DROP TABLE IF EXISTS preference, rider_preference;
 -- Add here your sql statements to create the tables "preference" and "rider_preference"
 CREATE TABLE rider_preference
 (
-    rider_id      BIGINT NOT NULL,
+    rider_id      BIGINT NOT NULL PRIMARY KEY ,
     vehicle_class VARCHAR(255),
-    area          VARCHAR(255),
-    primary key (rider_id)
+    area          VARCHAR(255)
 );
 
 CREATE TABLE preference
 (
-    id         BIGINT NOT NULL,
+    id         IDENTITY NOT NULL PRIMARY KEY,
     rider_id   BIGINT,
     pref_key   VARCHAR(255),
     pref_value VARCHAR(255),
-    primary key (id),
-    foreign key (rider_id) references rider_preference (rider_id)
+    FOREIGN KEY (rider_id) REFERENCES rider_preference (rider_id)
+        ON DELETE CASCADE
 );
 
