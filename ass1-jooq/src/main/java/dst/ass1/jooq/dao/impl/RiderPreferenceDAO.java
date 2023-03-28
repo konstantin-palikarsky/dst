@@ -82,8 +82,7 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
 
             var modelPreferences = model.getPreferences();
 
-            for (String key : modelPreferences.keySet()
-            ) {
+            for (String key : modelPreferences.keySet()) {
                 trx.dsl().insertInto(PREFERENCE,
                                 PREFERENCE.RIDER_ID, PREFERENCE.PREF_KEY, PREFERENCE.PREF_VALUE)
                         .values(model.getRiderId(), key, modelPreferences.get(key)).execute();
