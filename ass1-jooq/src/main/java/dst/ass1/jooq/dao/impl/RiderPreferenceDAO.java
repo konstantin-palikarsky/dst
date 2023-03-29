@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.jooq.impl.DSL.*;
+import static org.jooq.impl.DSL.multisetAgg;
 
 
 public class RiderPreferenceDAO implements IRiderPreferenceDAO {
@@ -75,19 +75,19 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
     public IRiderPreference insert(IRiderPreference model) {
 
         context.transaction((Configuration trx) -> {
+            var transaction = trx.dsl();
 
-            trx.dsl().insertInto(RIDER_PREFERENCE, RIDER_PREFERENCE.RIDER_ID, RIDER_PREFERENCE.AREA,
+            transaction.insertInto(RIDER_PREFERENCE, RIDER_PREFERENCE.RIDER_ID, RIDER_PREFERENCE.AREA,
                             RIDER_PREFERENCE.VEHICLE_CLASS)
                     .values(model.getRiderId(), model.getArea(), model.getVehicleClass()).execute();
 
             var modelPreferences = model.getPreferences();
 
             for (String key : modelPreferences.keySet()) {
-                trx.dsl().insertInto(PREFERENCE,
+                transaction.insertInto(PREFERENCE,
                                 PREFERENCE.RIDER_ID, PREFERENCE.PREF_KEY, PREFERENCE.PREF_VALUE)
                         .values(model.getRiderId(), key, modelPreferences.get(key)).execute();
             }
-
         });
 
         return model;
@@ -106,9 +106,9 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
         var riderId = model.getRiderId();
 
         context.transaction((Configuration trx) -> {
-            for (String key : modelPreferences.keySet()
-            ) {
-                trx.dsl().mergeInto(PREFERENCE)
+            var transaction = trx.dsl();
+            for (String key : modelPreferences.keySet()) {
+                transaction.mergeInto(PREFERENCE)
                         .using(context.selectOne())
                         .on(PREFERENCE.PREF_KEY.eq(key))
                         .whenMatchedThenUpdate()
@@ -137,9 +137,10 @@ public class RiderPreferenceDAO implements IRiderPreferenceDAO {
 
         var preferenceMap = new HashMap<String, String>();
         for (Record2<String, String> preferenceTuple : preferences) {
-            preferenceMap.put(preferenceTuple.value1(), preferenceTuple.value2());
-
+            preferenceMap.put(preferenceTuple.get(PREFERENCE.PREF_KEY),
+                    preferenceTuple.get(PREFERENCE.PREF_VALUE));
         }
+
         rider.setPreferences(preferenceMap);
         return rider;
     }
