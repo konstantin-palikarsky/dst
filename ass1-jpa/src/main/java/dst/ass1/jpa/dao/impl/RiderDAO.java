@@ -12,7 +12,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -26,11 +25,11 @@ public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
     @Override
     public List<IRider> findRidersByCurrencyValueAndCurrency(BigDecimal currencyValue, String currency) {
         try {
-            var riderList = this.em.createNamedQuery(Constants.Q_RIDER_BY_SPENT_AND_CURRENCY).setParameter("value", currencyValue).setParameter("currency", currency).getResultList();
+            return this.em.createNamedQuery(Constants.Q_RIDER_BY_SPENT_AND_CURRENCY, IRider.class)
+                    .setParameter("value", currencyValue)
+                    .setParameter("currency", currency)
+                    .getResultList();
 
-            //System.err.println(riderList.size());
-
-            return riderList;
         } catch (NoResultException e) {
             return null;
         }
@@ -39,10 +38,10 @@ public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
     @Override
     public List<IRider> findTopThreeRidersWithMostCanceledTripsAndRatingLowerEqualTwo(Date start, Date end) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Rider> cq = cb.createQuery(Rider.class);
+        CriteriaQuery<IRider> cq = cb.createQuery(IRider.class);
         Root<Rider> rider = cq.from(Rider.class);
 
-        Join<Rider, Trip> trip = rider.join("trips", JoinType.LEFT);
+        Join<Rider, Trip> trip = rider.join("trips", JoinType.INNER);
 
         //Always true predicates
         Predicate startPredicate = cb.and();
@@ -68,20 +67,20 @@ public class RiderDAO extends BasicDAOImpl<IRider> implements IRiderDAO {
                 .groupBy(rider)
                 .orderBy(cb.desc(cb.count(trip.get("id"))));
 
-        TypedQuery<Rider> q = em.createQuery(cq);
+        TypedQuery<IRider> q = em.createQuery(cq);
 
-        List<IRider> resultList = new ArrayList<>(q.setMaxResults(3).getResultList());
-        return resultList;
+        return q.setMaxResults(3).getResultList();
     }
 
     @Override
     public IRider findByEmail(String email) {
-
         try {
-            return (IRider) this.em.createNamedQuery(Constants.Q_RIDER_BY_EMAIL).setParameter("email", email).getSingleResult();
+            return this.em.createNamedQuery(Constants.Q_RIDER_BY_EMAIL, IRider.class)
+                    .setParameter("email", email)
+                    .getSingleResult();
         } catch (NoResultException e) {
             return null;
         }
-
     }
+
 }
