@@ -3,7 +3,6 @@ package dst.ass1.doc.impl;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import dst.ass1.doc.IDocumentRepository;
 import dst.ass1.jpa.model.ILocation;
@@ -22,7 +21,6 @@ public class DocumentRepository implements IDocumentRepository, AutoCloseable {
         MongoDatabase db = mongoClient.getDatabase(Constants.MONGO_DB_NAME);
         collection = db.getCollection(Constants.COLL_LOCATION_DATA);
 
-        //TODO switch to haystack index
         collection.createIndex(Indexes.geo2dsphere("geo.coordinates"));
         collection.createIndex(Indexes.ascending("location_id"));
     }

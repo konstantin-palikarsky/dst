@@ -1,7 +1,11 @@
 package dst.ass1.doc.impl;
 
-import com.mongodb.client.*;
-import com.mongodb.client.model.*;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import dst.ass1.doc.IDocumentQuery;
 import dst.ass1.jpa.util.Constants;
 import org.bson.Document;
@@ -43,47 +47,40 @@ public class DocumentQuery implements IDocumentQuery {
                                 "$name",
                                 Accumulators.avg("averageOpeningHours", "$workingHours")
                         )
-                ));
+                )).into(new ArrayList<>());
 
-        return documentsToList(docs);
+        LOGGER.info("Found {} restaurants, and averaged their working time.", docs.size());
+
+        return docs;
     }
 
     @Override
     public List<Document> findDocumentsByNameWithinPolygon(String name, List<List<Double>> polygon) {
-        LOGGER.info("MongoDB query by name similar to: "+name+" and within Polygon: "+polygon);
+        LOGGER.info("MongoDB queried by name similar to: {} and within Polygon {} ", name, polygon);
 
         var docs = collection.find(
                 Filters.and(
                         Filters.regex("name", "^.*" + name + ".*"),
                         Filters.geoWithinPolygon("geo.coordinates", polygon))
-        );
+        ).into(new ArrayList<>());
 
-        return documentsToList(docs);
+        LOGGER.info("Found {} documents with a name similar to {}, within polygon {}.", docs.size(), name, polygon);
+
+        return docs;
     }
 
     @Override
     public List<Document> findDocumentsByType(String type) {
-        LOGGER.info("MongoDB query by type: "+type);
+        LOGGER.info("MongoDB queried by type {}", type);
 
-        var docs = collection.find(Filters.eq("type", type));
+        var docs =
+                collection.find(
+                        new Document("type", type)
+                ).into(new ArrayList<>());
 
-        return documentsToList(docs);
-    }
+        LOGGER.info("Found {} documents with type {}.", docs.size(), type);
 
-    private List<Document> documentsToList(MongoIterable<Document> docs) {
-        var resultList = new ArrayList<Document>();
-
-
-        try (MongoCursor<Document> cursor = docs.iterator()) {
-            while (cursor.hasNext()) {
-                var document = cursor.next();
-                resultList.add(document);
-            }
-        }
-        LOGGER.info("Results: "+ resultList);
-
-
-        return resultList;
+        return docs;
     }
 
 }
