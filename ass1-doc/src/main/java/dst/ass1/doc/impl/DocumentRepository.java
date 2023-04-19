@@ -21,7 +21,7 @@ public class DocumentRepository implements IDocumentRepository, AutoCloseable {
         MongoDatabase db = mongoClient.getDatabase(Constants.MONGO_DB_NAME);
         collection = db.getCollection(Constants.COLL_LOCATION_DATA);
 
-        collection.createIndex(Indexes.geo2dsphere("geo.coordinates"));
+        collection.createIndex(Indexes.geo2dsphere("geo"));
         collection.createIndex(Indexes.ascending("location_id"));
     }
 
