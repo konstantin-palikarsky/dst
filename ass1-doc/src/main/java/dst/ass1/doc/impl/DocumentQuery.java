@@ -61,7 +61,7 @@ public class DocumentQuery implements IDocumentQuery {
         var docs = collection.find(
                 Filters.and(
                         Filters.regex("name", "^.*" + name + ".*"),
-                        Filters.geoWithinPolygon("geo.coordinates", polygon))
+                        Filters.geoWithinPolygon("geo", polygon))
         ).into(new ArrayList<>());
 
         LOGGER.info("Found {} documents with a name similar to {}, within polygon {}.", docs.size(), name, polygon);
