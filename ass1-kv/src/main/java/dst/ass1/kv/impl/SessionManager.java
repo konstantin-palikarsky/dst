@@ -31,7 +31,7 @@ public class SessionManager implements ISessionManager {
 
         try (Transaction t = redisClient.multi()) {
             sessionToken = createSession(t, userId.toString(), timeToLive);
-            if (t.exec() == null) {
+            if (!t.exec().stream().allMatch(x -> x.equals("OK") || x.equals(1L))) {
                 throw new SessionCreationFailedException();
             }
         }
