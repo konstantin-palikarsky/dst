@@ -23,6 +23,11 @@ public abstract class BasicDAOImpl<T> implements GenericDAO<T> {
         return em.find(targetClass, id);
     }
 
+    public T save(T entity) {
+        em.persist(entity);
+        return entity;
+    }
+
     @Override
     public List<T> findAll() {
 
