@@ -65,8 +65,7 @@ public class TripService implements ITripService {
         newTrip.setDestination(destination);
         newTrip.setState(TripState.CREATED);
 
-        ITrip persistedTrip = tripRepository.save(newTrip);
-        var dto = mapTripToDto(persistedTrip);
+        var dto = mapTripToDto(newTrip);
         MoneyDTO fare;
 
         try {
@@ -123,7 +122,6 @@ public class TripService implements ITripService {
         var dto = new TripDTO();
         dto.setDestinationId(trip.getDestination().getId());
         dto.setPickupId(trip.getPickup().getId());
-        dto.setStops(trip.getStops().stream().map(ILocation::getId).collect(Collectors.toList()));
         dto.setRiderId(trip.getRider().getId());
         dto.setId(trip.getId());
 

@@ -5,48 +5,42 @@ import dst.ass1.jpa.model.ILocation;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.validation.constraints.NotNull;
 
 @Entity
 public class Location implements ILocation {
-
     @Id
     @GeneratedValue
     private Long id;
-
-    @NotNull
     private String name;
-
-    @NotNull
-    private Long locationId;
+    private Long locationalId;
 
     @Override
     public Long getId() {
-        return null;
+        return id;
     }
 
     @Override
     public void setId(Long id) {
-
+        this.id = id;
     }
 
     @Override
     public String getName() {
-        return null;
+        return name;
     }
 
     @Override
     public void setName(String name) {
-
+        this.name = name;
     }
 
     @Override
     public Long getLocationId() {
-        return null;
+        return locationalId;
     }
 
     @Override
     public void setLocationId(Long locationId) {
-
+        this.locationalId = locationId;
     }
 }
