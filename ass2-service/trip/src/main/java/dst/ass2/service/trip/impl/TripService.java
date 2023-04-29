@@ -1,5 +1,6 @@
 package dst.ass2.service.trip.impl;
 
+import dst.ass1.jpa.dao.IDAOFactory;
 import dst.ass1.jpa.dao.ILocationDAO;
 import dst.ass1.jpa.dao.IRiderDAO;
 import dst.ass1.jpa.dao.ITripDAO;
@@ -7,38 +8,45 @@ import dst.ass1.jpa.model.ILocation;
 import dst.ass1.jpa.model.ITrip;
 import dst.ass1.jpa.model.TripState;
 import dst.ass1.jpa.model.impl.Trip;
+import dst.ass2.service.api.match.IMatchingService;
 import dst.ass2.service.api.trip.*;
 
+import javax.annotation.ManagedBean;
+import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.stream.Collectors;
 
 @Singleton
 @Named
-public class TripServiceImpl implements ITripService {
+@ManagedBean
+public class TripService implements ITripService {
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Inject
+    private IDAOFactory daoFactory;
+
+    @Inject
+    private IMatchingService matchingService;
+
     private ITripDAO tripRepository;
-    @Inject
     private IRiderDAO riderRepository;
-    @Inject
     private ILocationDAO locationRepository;
 
+    @PostConstruct
+    public void startup() {
+        tripRepository = daoFactory.createTripDAO();
+        riderRepository = daoFactory.createRiderDAO();
+        locationRepository = daoFactory.createLocationDAO();
+    }
 
     @Override
     public TripDTO create(Long riderId, Long pickupId, Long destinationId) throws EntityNotFoundException {
-        /**
-         * Creates and persists a Trip, sets the state to CREATED and calculates an initial fare estimation for
-         * the route 'pickupId - destinationId'
-         *
-         * @param riderId       the id of the rider, who is planning a trip
-         * @param pickupId      the id of the pickupId location
-         * @param destinationId the id of the destinationId location
-         * @return a TripDTO corresponding to the persisted Trip and includes the fare (null if route is invalid)
-         * @throws EntityNotFoundException if the rider or one of the locations doesn't exist
-         */
-
         var rider = riderRepository.findById(riderId);
         var pickup = locationRepository.findById(pickupId);
         var destination = locationRepository.findById(destinationId);
@@ -58,9 +66,17 @@ public class TripServiceImpl implements ITripService {
         newTrip.setState(TripState.CREATED);
 
         ITrip persistedTrip = tripRepository.save(newTrip);
+        var dto = mapTripToDto(persistedTrip);
+        MoneyDTO fare;
 
+        try {
+            fare = matchingService.calculateFare(dto);
+        } catch (InvalidTripException e) {
+            fare = null;
+        }
+        dto.setFare(fare);
 
-        return mapTripToDto(persistedTrip);
+        return dto;
     }
 
     @Override
