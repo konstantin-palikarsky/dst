@@ -5,7 +5,6 @@ import dst.ass1.jpa.model.*;
 import dst.ass2.service.api.match.IMatchingService;
 import dst.ass2.service.api.trip.*;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
@@ -17,7 +16,6 @@ import java.util.stream.Collectors;
 @Singleton
 @Named
 @Transactional
-@ManagedBean
 public class TripService implements ITripService {
 
     @Inject
