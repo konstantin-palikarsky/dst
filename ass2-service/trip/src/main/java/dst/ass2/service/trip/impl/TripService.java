@@ -35,6 +35,7 @@ public class TripService implements ITripService {
     private IVehicleDAO vehicleRepository;
     private IDriverDAO driverRepository;
     private IMatchDAO matchRepository;
+    private ITripInfoDAO tripInfoRepository;
 
     @PostConstruct
     public void startup() {
@@ -44,6 +45,7 @@ public class TripService implements ITripService {
         vehicleRepository = daoFactory.createVehicleDAO();
         driverRepository = daoFactory.createDriverDAO();
         matchRepository = daoFactory.createMatchDAO();
+        tripInfoRepository = daoFactory.createTripInfoDAO();
     }
 
     @Override
@@ -134,7 +136,17 @@ public class TripService implements ITripService {
 
     @Override
     public void complete(Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
-        throw new RuntimeException();
+        var tripEntity = tripRepository.findById(tripId);
+
+        if (tripEntity == null) {
+            throw new EntityNotFoundException("Attempting to complete non-existent trip");
+        }
+
+        tripEntity.setState(TripState.COMPLETED);
+        var tripInfoEntity = mapDtoToTripInfo(tripInfoDTO, tripEntity);
+
+        tripRepository.save(tripEntity);
+        tripInfoRepository.save(tripInfoEntity);
     }
 
     @Override
@@ -264,6 +276,17 @@ public class TripService implements ITripService {
                 !lastTrip.getState().equals(TripState.CANCELLED);
     }
 
+    private ITripInfo mapDtoToTripInfo(TripInfoDTO dto, ITrip tripEntity) {
+        var tripInfo = modelFactory.createTripInfo();
+
+        tripInfo.setTrip(tripEntity);
+        tripInfo.setCompleted(dto.getCompleted());
+        tripInfo.setDistance(dto.getDistance());
+        tripInfo.setTotal(mapDtoToMoney(dto.getFare()));
+
+        return tripInfo;
+    }
+
     private IMatch mapDtoToMatch(MatchDTO dto, IDriver driver, IVehicle vehicle, ITrip trip) {
         IMatch matchEntity = modelFactory.createMatch();
         matchEntity.setDriver(driver);
@@ -272,16 +295,19 @@ public class TripService implements ITripService {
 
         var fareDto = dto.getFare();
         if (fareDto != null) {
-            IMoney fare = modelFactory.createMoney();
-            fare.setCurrency(fareDto.getCurrency());
-            fare.setCurrencyValue(fareDto.getValue());
-
-            matchEntity.setFare(fare);
+            matchEntity.setFare(mapDtoToMoney(fareDto));
         }
 
         matchEntity.setDate(new Date());
 
         return matchEntity;
+    }
+
+    private IMoney mapDtoToMoney(MoneyDTO dto) {
+        IMoney fare = modelFactory.createMoney();
+        fare.setCurrency(dto.getCurrency());
+        fare.setCurrencyValue(dto.getValue());
+        return fare;
     }
 
     private MoneyDTO safelyCalculateFare(TripDTO trip) {
