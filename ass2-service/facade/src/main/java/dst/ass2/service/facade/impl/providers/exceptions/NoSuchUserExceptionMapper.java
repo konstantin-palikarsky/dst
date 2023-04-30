@@ -1,4 +1,4 @@
-package dst.ass2.service.facade.impl;
+package dst.ass2.service.facade.impl.providers.exceptions;
 
 import dst.ass2.service.api.auth.NoSuchUserException;
 

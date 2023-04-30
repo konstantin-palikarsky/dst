@@ -1,4 +1,4 @@
-package dst.ass2.service.trip.impl;
+package dst.ass2.service.trip.impl.providers;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;

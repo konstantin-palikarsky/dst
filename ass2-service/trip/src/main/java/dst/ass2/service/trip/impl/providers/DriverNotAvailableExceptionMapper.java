@@ -1,4 +1,4 @@
-package dst.ass2.service.trip.impl;
+package dst.ass2.service.trip.impl.providers;
 
 import dst.ass2.service.api.trip.DriverNotAvailableException;
 
