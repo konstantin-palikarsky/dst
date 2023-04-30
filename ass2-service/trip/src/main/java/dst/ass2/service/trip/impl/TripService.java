@@ -100,6 +100,11 @@ public class TripService implements ITripService {
             return false;
         }
 
+        var locationEntity = locationRepository.findById(locationId);
+        if (locationEntity == null) {
+            throw new EntityNotFoundException("Cannot add a stop at an non-existent location");
+        }
+
         var tripEntity = tripRepository.findById(trip.getId());
         if (tripEntity == null) {
             throw new RuntimeException("DTO of non-existent entity at runtime");
@@ -107,11 +112,6 @@ public class TripService implements ITripService {
 
         if (!tripEntity.getState().equals(TripState.CREATED)) {
             throw new IllegalStateException("This trip's route can no longer be modified");
-        }
-
-        var locationEntity = locationRepository.findById(locationId);
-        if (locationEntity == null) {
-            throw new EntityNotFoundException("Cannot add a stop at an non-existent location");
         }
 
         tripEntity.addStop(locationEntity);
@@ -129,7 +129,39 @@ public class TripService implements ITripService {
 
     @Override
     public boolean removeStop(TripDTO trip, Long locationId) throws EntityNotFoundException, IllegalStateException {
-        throw new RuntimeException();
+
+        var locationEntity = locationRepository.findById(locationId);
+        if (locationEntity == null) {
+            throw new EntityNotFoundException("Cannot remove a stop that doesn't exist");
+        }
+
+        if (!trip.getStops().contains(locationId)) {
+            return false;
+        }
+
+        var tripEntity = tripRepository.findById(trip.getId());
+        if (tripEntity == null) {
+            throw new RuntimeException("DTO of non-existent entity at runtime");
+        }
+
+        if (!tripEntity.getState().equals(TripState.CREATED)) {
+            throw new IllegalStateException("This trip's route can no longer be modified");
+        }
+
+        var newEntityStops = tripEntity.getStops();
+        newEntityStops.remove(locationEntity);
+
+        tripEntity.setStops(newEntityStops);
+        tripRepository.save(tripEntity);
+
+        var newDtoStops = trip.getStops();
+        newDtoStops.remove(locationId);
+        trip.setStops(newDtoStops);
+
+        var fare = safelyCalculateFare(trip);
+        trip.setFare(fare);
+
+        return true;
     }
 
     @Override
