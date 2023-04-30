@@ -29,7 +29,7 @@ public class GrpcServerRunner implements IGrpcServerRunner {
 
         server.start();
         try {
-            server.awaitTermination(5, TimeUnit.SECONDS);
+            server.awaitTermination(2, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {
         }
 
