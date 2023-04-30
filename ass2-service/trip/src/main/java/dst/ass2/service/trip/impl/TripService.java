@@ -1,9 +1,6 @@
 package dst.ass2.service.trip.impl;
 
-import dst.ass1.jpa.dao.IDAOFactory;
-import dst.ass1.jpa.dao.ILocationDAO;
-import dst.ass1.jpa.dao.IRiderDAO;
-import dst.ass1.jpa.dao.ITripDAO;
+import dst.ass1.jpa.dao.*;
 import dst.ass1.jpa.model.ILocation;
 import dst.ass1.jpa.model.IModelFactory;
 import dst.ass1.jpa.model.ITrip;
@@ -37,12 +34,16 @@ public class TripService implements ITripService {
     private ITripDAO tripRepository;
     private IRiderDAO riderRepository;
     private ILocationDAO locationRepository;
+    private IVehicleDAO vehicleRepository;
+    private IDriverDAO driverRepository;
 
     @PostConstruct
     public void startup() {
         tripRepository = daoFactory.createTripDAO();
         riderRepository = daoFactory.createRiderDAO();
         locationRepository = daoFactory.createLocationDAO();
+        vehicleRepository = daoFactory.createVehicleDAO();
+        driverRepository = daoFactory.createDriverDAO();
     }
 
     @Override
@@ -93,6 +94,28 @@ public class TripService implements ITripService {
 
     @Override
     public void match(Long tripId, MatchDTO match) throws EntityNotFoundException, DriverNotAvailableException, IllegalStateException {
+        /**
+         * Creates a match for the given trip and sets the trip's state to MATCHED, if possible (i.e., if the trips is
+         * QUEUED). In case something goes wrong, re-queues the trip for a new match.
+         * You can assume that the locations (pickup, destination and stops) haven't been deleted and will not be deleted
+         * during the execution of this method.
+         *
+         * @param tripId the id of the trip the match will be created for
+         * @param match  the match, containing the driver, the vehicle and the fare
+         * @throws EntityNotFoundException     in case one of the following doesn't exist anymore: trip, driver or
+         *                                     vehicle
+         * @throws DriverNotAvailableException in case the driver was assigned in the meantime to another customer
+         * @throws IllegalStateException       in case the rider of the trip is null or the trip is not in QUEUED state
+         */
+        var tripEntity = tripRepository.findById(tripId);
+        var driverEntity = driverRepository.findById(match.getDriverId());
+        var vehicleEntity = vehicleRepository.findById(match.getVehicleId());
+        if (tripEntity == null || driverEntity==null || vehicleEntity == null) {
+            matchingService.queueTripForMatching(tripId);
+            throw new EntityNotFoundException("One of the match entities no-longer exists, please requeue");
+        }
+
+
         throw new RuntimeException();
     }
 
