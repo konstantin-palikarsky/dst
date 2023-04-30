@@ -151,7 +151,14 @@ public class TripService implements ITripService {
 
     @Override
     public void cancel(Long tripId) throws EntityNotFoundException {
-        throw new RuntimeException();
+        var tripEntity = tripRepository.findById(tripId);
+
+        if (tripEntity == null) {
+            throw new EntityNotFoundException("Attempting to cancel non-existent trip");
+        }
+
+        tripEntity.setState(TripState.CANCELLED);
+        tripRepository.save(tripEntity);
     }
 
     @Override
