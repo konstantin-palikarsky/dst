@@ -4,7 +4,6 @@ import dst.ass1.jpa.dao.IDAOFactory;
 import dst.ass1.jpa.dao.ILocationDAO;
 import dst.ass1.jpa.dao.IRiderDAO;
 import dst.ass1.jpa.dao.ITripDAO;
-import dst.ass1.jpa.model.ILocation;
 import dst.ass1.jpa.model.ITrip;
 import dst.ass1.jpa.model.TripState;
 import dst.ass1.jpa.model.impl.Trip;
@@ -16,17 +15,13 @@ import javax.annotation.PostConstruct;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.stream.Collectors;
+import javax.transaction.Transactional;
 
 @Singleton
 @Named
+@Transactional
 @ManagedBean
 public class TripService implements ITripService {
-
-    @PersistenceContext
-    private EntityManager em;
 
     @Inject
     private IDAOFactory daoFactory;
@@ -65,7 +60,8 @@ public class TripService implements ITripService {
         newTrip.setDestination(destination);
         newTrip.setState(TripState.CREATED);
 
-        var dto = mapTripToDto(newTrip);
+        ITrip persistedTrip = tripRepository.save(newTrip);
+        var dto = mapTripToDto(persistedTrip);
         MoneyDTO fare;
 
         try {
