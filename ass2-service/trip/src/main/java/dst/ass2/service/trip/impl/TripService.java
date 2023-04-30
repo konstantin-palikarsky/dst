@@ -180,7 +180,16 @@ public class TripService implements ITripService {
 
     @Override
     public TripDTO find(Long tripId) {
-        throw new RuntimeException();
+        var tripEntity = tripRepository.findById(tripId);
+        if (tripEntity == null) {
+            return null;
+        }
+
+        var tripDto = mapTripToDto(tripEntity);
+        var fare = safelyCalculateFare(tripDto);
+        tripDto.setFare(fare);
+
+        return tripDto;
     }
 
     private TripDTO mapTripToDto(ITrip trip) {
