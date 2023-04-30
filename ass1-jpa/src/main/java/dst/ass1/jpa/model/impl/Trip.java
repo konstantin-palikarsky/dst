@@ -1,16 +1,24 @@
 package dst.ass1.jpa.model.impl;
 
 import dst.ass1.jpa.model.*;
+import dst.ass1.jpa.util.Constants;
 
+import javax.persistence.NamedQuery;
 import java.util.Collection;
 import java.util.Date;
 
 /**
-* JPA Implementation in XML
- * */
+ * JPA Implementation in XML
+ */
+@NamedQuery(
+        name = Constants.Q_LAST_TRIP_OF_DRIVER,
+        query = "SELECT t FROM Trip t " +
+                "WHERE t.match.driver.id=:driver_id " +
+                "ORDER BY t.match.date DESC"
+)
 public class Trip implements ITrip {
-    private  Long id;
-    private  Date created;
+    private Long id;
+    private Date created;
     private Date updated;
     private TripState state;
     private ILocation pickup;

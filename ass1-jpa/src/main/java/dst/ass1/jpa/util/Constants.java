@@ -99,11 +99,13 @@ public final class Constants {
     public static final String Q_ACTIVE_IN_MULITIPLE_ORGANIZATIONS_DRIVERS = "activeInMultipleOrganizationsDrivers";
     public static final String Q_REACHED_LOCATIONS = "reachedLocations";
     public static final String Q_SUM_DISTANCE_MOST_RECENT_TRIP = "sumDistanceOfRiderWithMostRecentTrip";
-  public static final String Q_COUNT_MATCH_BY_DATE = "countMatchOnDate";
+    public static final String Q_COUNT_MATCH_BY_DATE = "countMatchOnDate";
+    public static final String Q_LAST_TRIP_OF_DRIVER = "getLastTripOfDriver";
 
-  public static final String Q_TOP_DRIVER_OF_ORGANIZATION = "organizationWithTheTopDriver";
 
-  public static final String Q_RIDER_BY_SPENT_AND_CURRENCY = "riderBySpentAndCurrency";
+    public static final String Q_TOP_DRIVER_OF_ORGANIZATION = "organizationWithTheTopDriver";
+
+    public static final String Q_RIDER_BY_SPENT_AND_CURRENCY = "riderBySpentAndCurrency";
     /* JOIN TABLES */
     public static final String J_ORGANIZATION_VEHICLE = "organization_vehicle";
     public static final String J_ORGANIZATION_PARTS = "organization_parts";

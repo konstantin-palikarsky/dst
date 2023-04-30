@@ -1,10 +1,7 @@
 package dst.ass2.service.trip.impl;
 
 import dst.ass1.jpa.dao.*;
-import dst.ass1.jpa.model.ILocation;
-import dst.ass1.jpa.model.IModelFactory;
-import dst.ass1.jpa.model.ITrip;
-import dst.ass1.jpa.model.TripState;
+import dst.ass1.jpa.model.*;
 import dst.ass2.service.api.match.IMatchingService;
 import dst.ass2.service.api.trip.*;
 
@@ -14,6 +11,7 @@ import javax.ejb.Singleton;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 @Singleton
@@ -36,6 +34,7 @@ public class TripService implements ITripService {
     private ILocationDAO locationRepository;
     private IVehicleDAO vehicleRepository;
     private IDriverDAO driverRepository;
+    private IMatchDAO matchRepository;
 
     @PostConstruct
     public void startup() {
@@ -44,6 +43,7 @@ public class TripService implements ITripService {
         locationRepository = daoFactory.createLocationDAO();
         vehicleRepository = daoFactory.createVehicleDAO();
         driverRepository = daoFactory.createDriverDAO();
+        matchRepository = daoFactory.createMatchDAO();
     }
 
     @Override
@@ -110,13 +110,26 @@ public class TripService implements ITripService {
         var tripEntity = tripRepository.findById(tripId);
         var driverEntity = driverRepository.findById(match.getDriverId());
         var vehicleEntity = vehicleRepository.findById(match.getVehicleId());
-        if (tripEntity == null || driverEntity==null || vehicleEntity == null) {
+        if (tripEntity == null || driverEntity == null || vehicleEntity == null) {
             matchingService.queueTripForMatching(tripId);
-            throw new EntityNotFoundException("One of the match entities no-longer exists, please requeue");
+            throw new EntityNotFoundException("One of the required match entities no-longer exists, re-queuing");
         }
 
+        if (tripEntity.getRider() == null || !tripEntity.getState().equals(TripState.QUEUED)) {
+            matchingService.queueTripForMatching(tripId);
+            throw new IllegalStateException("Cannot match a trip in this state, re-queuing");
+        }
 
-        throw new RuntimeException();
+        if (isDriverCurrentlyAssigned(driverEntity.getId())) {
+            matchingService.queueTripForMatching(tripId);
+            throw new DriverNotAvailableException("The designated driver is currently busy, re-queuing");
+        }
+
+        tripEntity.setState(TripState.MATCHED);
+        var matchEntity = mapDtoToMatch(match, driverEntity, vehicleEntity, tripEntity);
+
+        tripRepository.save(tripEntity);
+        matchRepository.save(matchEntity);
     }
 
     @Override
@@ -240,6 +253,35 @@ public class TripService implements ITripService {
         }
 
         return dto;
+    }
+
+    private boolean isDriverCurrentlyAssigned(Long driverId) {
+        var lastTrip = tripRepository.getLastTripOfDriver(driverId);
+
+        //Early termination protects from NPE
+        return !(lastTrip == null) &&
+                !lastTrip.getState().equals(TripState.COMPLETED) &&
+                !lastTrip.getState().equals(TripState.CANCELLED);
+    }
+
+    private IMatch mapDtoToMatch(MatchDTO dto, IDriver driver, IVehicle vehicle, ITrip trip) {
+        IMatch matchEntity = modelFactory.createMatch();
+        matchEntity.setDriver(driver);
+        matchEntity.setVehicle(vehicle);
+        matchEntity.setTrip(trip);
+
+        var fareDto = dto.getFare();
+        if (fareDto != null) {
+            IMoney fare = modelFactory.createMoney();
+            fare.setCurrency(fareDto.getCurrency());
+            fare.setCurrencyValue(fareDto.getValue());
+
+            matchEntity.setFare(fare);
+        }
+
+        matchEntity.setDate(new Date());
+
+        return matchEntity;
     }
 
     private MoneyDTO safelyCalculateFare(TripDTO trip) {
