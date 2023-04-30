@@ -75,7 +75,20 @@ public class TripService implements ITripService {
 
     @Override
     public void confirm(Long tripId) throws EntityNotFoundException, IllegalStateException, InvalidTripException {
-        throw new RuntimeException();
+        var tripEntity = tripRepository.findById(tripId);
+        if (tripEntity == null) {
+            throw new EntityNotFoundException("Attempting to confirm non-existent trip");
+        }
+
+        if (!tripEntity.getState().equals(TripState.CREATED) ||
+                tripEntity.getRider() == null) {
+            throw new IllegalStateException("Trip not in correct internal state to confirm");
+        }
+        matchingService.calculateFare(mapTripToDto(tripEntity));
+
+        tripEntity.setState(TripState.QUEUED);
+        tripRepository.save(tripEntity);
+        matchingService.queueTripForMatching(tripId);
     }
 
     @Override
