@@ -2,6 +2,7 @@ package dst.ass2.service.facade.impl;
 
 import dst.ass2.service.api.trip.*;
 import dst.ass2.service.api.trip.rest.ITripServiceResource;
+import dst.ass2.service.facade.impl.providers.filter.RequireAuth;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -13,6 +14,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @GET
     @Path("/{id}")
+    @RequireAuth
     public Response getTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
         throw new RuntimeException("Unimplemented");
 
@@ -21,6 +23,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
+    @RequireAuth
     public Response createTrip(@FormParam("riderId") Long riderId,
                                @FormParam("pickupId") Long pickupId,
                                @FormParam("destinationId") Long destinationId)
@@ -32,6 +35,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @DELETE
     @Path("/{id}")
+    @RequireAuth
     public Response deleteTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
         throw new RuntimeException("Unimplemented");
 
@@ -42,6 +46,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @POST
     @Path("/{id}/stops")
     @Produces(MediaType.APPLICATION_JSON)
+    @RequireAuth
     public Response addStop(@PathParam("id") Long tripId,
                             @FormParam("locationId") Long locationId)
             throws EntityNotFoundException {
@@ -53,6 +58,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @DELETE
     @Path("/{id}/stops/{locationId}")
+    @RequireAuth
     public Response removeStop(@PathParam("id") Long tripId,
                                @PathParam("locationId") Long locationId)
             throws EntityNotFoundException {
@@ -64,6 +70,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @PATCH
     @Path("/{id}/confirm")
+    @RequireAuth
     public Response confirm(@PathParam("id") Long tripId) throws EntityNotFoundException, InvalidTripException {
         throw new RuntimeException("Unimplemented");
 
@@ -74,6 +81,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @POST
     @Path("/{id}/match")
     @Consumes(MediaType.APPLICATION_JSON)
+    @RequireAuth
     public Response match(@PathParam("id") Long tripId,
                           MatchDTO matchDTO)
             throws EntityNotFoundException, DriverNotAvailableException {
@@ -84,6 +92,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @PATCH
     @Path("/{id}/cancel")
+    @RequireAuth
     public Response cancel(@PathParam("id") Long tripId) throws EntityNotFoundException {
         throw new RuntimeException("Unimplemented");
 
@@ -92,6 +101,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @POST
     @Path("/{id}/complete")
+    @RequireAuth
     @Consumes(MediaType.APPLICATION_JSON)
     public Response complete(@PathParam("id") Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
         throw new RuntimeException("Unimplemented");
