@@ -96,13 +96,13 @@ public class TripService implements ITripService {
     @Override
     public boolean addStop(TripDTO trip, Long locationId) throws EntityNotFoundException, IllegalStateException {
 
-        if (trip.getStops().contains(locationId)) {
-            return false;
-        }
-
         var locationEntity = locationRepository.findById(locationId);
         if (locationEntity == null) {
             throw new EntityNotFoundException("Cannot add a stop at an non-existent location");
+        }
+
+        if (trip.getStops().contains(locationId)) {
+            return false;
         }
 
         var tripEntity = tripRepository.findById(trip.getId());
@@ -130,6 +130,11 @@ public class TripService implements ITripService {
     @Override
     public boolean removeStop(TripDTO trip, Long locationId) throws EntityNotFoundException, IllegalStateException {
 
+        /*
+        If we check for contains first we will never throw this exception, assuming proper
+        stop adding techniques, so even though it would save us a repository call, this
+        way we have a more in-depth view of the error cause
+        */
         var locationEntity = locationRepository.findById(locationId);
         if (locationEntity == null) {
             throw new EntityNotFoundException("Cannot remove a stop that doesn't exist");
@@ -166,8 +171,11 @@ public class TripService implements ITripService {
 
     @Override
     public void delete(Long tripId) throws EntityNotFoundException {
-        throw new RuntimeException();
+        var deleted = tripRepository.delete(tripId);
 
+        if (!deleted) {
+            throw new EntityNotFoundException("Trying to delete a non-existent trip");
+        }
     }
 
     @Override

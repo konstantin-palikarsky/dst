@@ -18,6 +18,23 @@ public abstract class BasicDAOImpl<T> implements GenericDAO<T> {
     }
 
     @Override
+    public boolean delete(Long id) {
+        var entityToRemove = findById(id);
+
+        if (entityToRemove == null) {
+            return false;
+        }
+
+        try {
+            em.remove(entityToRemove);
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
     public T findById(Long id) {
 
         return em.find(targetClass, id);

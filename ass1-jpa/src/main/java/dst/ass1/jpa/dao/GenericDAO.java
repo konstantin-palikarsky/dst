@@ -8,4 +8,6 @@ public interface GenericDAO<T> {
     List<T> findAll();
 
     T save(T entity);
+
+    boolean delete(Long id);
 }
