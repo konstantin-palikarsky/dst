@@ -21,7 +21,7 @@ public class TripServiceResource implements ITripServiceResource {
         var tripDto = tripService.find(tripId);
 
         if (tripDto == null) {
-            throw new EntityNotFoundException("found no trip");
+            throw new EntityNotFoundException("Trip not found");
         }
 
         return Response.ok().entity(tripDto).build();
@@ -35,16 +35,16 @@ public class TripServiceResource implements ITripServiceResource {
                                @FormParam("destinationId") Long destinationId)
             throws EntityNotFoundException {
 
-            var tripDto = tripService.create(riderId, pickupId, destinationId);
-            return Response.status(Response.Status.CREATED).entity(tripDto.getId()).build();
+        var tripDto = tripService.create(riderId, pickupId, destinationId);
+        return Response.status(Response.Status.CREATED).entity(tripDto.getId()).build();
     }
 
     @Override
     @DELETE
     @Path("/{id}")
     public Response deleteTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
-        tripService.delete(tripId);
 
+        tripService.delete(tripId);
         return Response.status(Response.Status.OK).build();
     }
 
@@ -64,15 +64,16 @@ public class TripServiceResource implements ITripServiceResource {
         var added = tripService.addStop(tripDto, locationId);
 
         if (!added) {
-            throw new IllegalArgumentException("");
+            throw new IllegalStateException("Stop Already Present");
         }
 
         return Response.status(Response.Status.OK).entity(tripDto.getFare()).build();
+
     }
 
     @Override
     @DELETE
-    @Path("/trips/{id}/stops/{locationId}")
+    @Path("/{id}/stops/{locationId}")
     public Response removeStop(@PathParam("id") Long tripId,
                                @PathParam("locationId") Long locationId)
             throws EntityNotFoundException {
@@ -83,15 +84,15 @@ public class TripServiceResource implements ITripServiceResource {
         var removed = tripService.removeStop(tripDto, locationId);
 
         if (!removed) {
-            throw new IllegalArgumentException("");
+            throw new IllegalStateException("No stop present");
         }
 
-        return Response.status(Response.Status.OK).entity(tripDto.getFare()).build();
+        return Response.status(Response.Status.OK).build();
     }
 
     @Override
     @PATCH
-    @Path("/trips/{id}/confirm")
+    @Path("/{id}/confirm")
     public Response confirm(@PathParam("id") Long tripId) throws EntityNotFoundException, InvalidTripException {
         tripService.confirm(tripId);
 
@@ -101,7 +102,7 @@ public class TripServiceResource implements ITripServiceResource {
 
     @Override
     @POST
-    @Path("/trips/{id}/match")
+    @Path("/{id}/match")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response match(@PathParam("id") Long tripId,
                           MatchDTO matchDTO)
@@ -113,7 +114,7 @@ public class TripServiceResource implements ITripServiceResource {
 
     @Override
     @PATCH
-    @Path("/trips/{id}/cancel")
+    @Path("/{id}/cancel")
     public Response cancel(@PathParam("id") Long tripId) throws EntityNotFoundException {
 
         tripService.cancel(tripId);
@@ -123,7 +124,7 @@ public class TripServiceResource implements ITripServiceResource {
 
     @Override
     @POST
-    @Path("/trips/{id}/complete")
+    @Path("/{id}/complete")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response complete(@PathParam("id") Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
         tripService.complete(tripId, tripInfoDTO);
