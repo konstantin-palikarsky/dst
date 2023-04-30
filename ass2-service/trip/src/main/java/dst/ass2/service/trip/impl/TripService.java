@@ -166,15 +166,18 @@ public class TripService implements ITripService {
         if (locationEntity == null) {
             throw new EntityNotFoundException("Cannot add a stop at an non-existent location");
         }
-
-        if (trip.getStops().contains(locationId)) {
-            return false;
-        }
-
         var tripEntity = tripRepository.findById(trip.getId());
         if (tripEntity == null) {
             throw new RuntimeException("DTO of non-existent entity at runtime");
         }
+
+        var dtoStops = tripEntity.getStops().stream()
+                .map(ILocation::getId).collect(Collectors.toList());
+
+        if (dtoStops.contains(locationId)) {
+            return false;
+        }
+
 
         if (!tripEntity.getState().equals(TripState.CREATED)) {
             throw new IllegalStateException("This trip's route can no longer be modified");
@@ -183,9 +186,8 @@ public class TripService implements ITripService {
         tripEntity.addStop(locationEntity);
         tripRepository.save(tripEntity);
 
-        var newTripStops = trip.getStops();
-        newTripStops.add(locationId);
-        trip.setStops(newTripStops);
+        dtoStops.add(locationId);
+        trip.setStops(dtoStops);
 
         var fare = safelyCalculateFare(trip);
         trip.setFare(fare);
@@ -206,14 +208,20 @@ public class TripService implements ITripService {
             throw new EntityNotFoundException("Cannot remove a stop that doesn't exist");
         }
 
-        if (!trip.getStops().contains(locationId)) {
-            return false;
-        }
-
         var tripEntity = tripRepository.findById(trip.getId());
         if (tripEntity == null) {
             throw new RuntimeException("DTO of non-existent entity at runtime");
         }
+
+        var dtoStops = tripEntity.getStops().stream()
+                .map(ILocation::getId).collect(Collectors.toList());
+
+
+        if (!dtoStops.contains(locationId)) {
+            return false;
+        }
+
+
 
         if (!tripEntity.getState().equals(TripState.CREATED)) {
             throw new IllegalStateException("This trip's route can no longer be modified");
@@ -225,9 +233,8 @@ public class TripService implements ITripService {
         tripEntity.setStops(newEntityStops);
         tripRepository.save(tripEntity);
 
-        var newDtoStops = trip.getStops();
-        newDtoStops.remove(locationId);
-        trip.setStops(newDtoStops);
+        dtoStops.remove(locationId);
+        trip.setStops(dtoStops);
 
         var fare = safelyCalculateFare(trip);
         trip.setFare(fare);

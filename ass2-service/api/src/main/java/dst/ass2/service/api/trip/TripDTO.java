@@ -65,4 +65,16 @@ public class TripDTO implements Serializable {
     public void setFare(MoneyDTO fare) {
         this.fare = fare;
     }
+
+    @Override
+    public String toString() {
+        return "TripDTO{" +
+                "id=" + id +
+                ", riderId=" + riderId +
+                ", pickupId=" + pickupId +
+                ", destinationId=" + destinationId +
+                ", stops=" + stops +
+                ", fare=" + fare +
+                '}';
+    }
 }
