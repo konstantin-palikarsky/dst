@@ -11,8 +11,8 @@ public final class ObjectContainerFactory implements IObjectContainerFactory {
     public IObjectContainer newObjectContainer(Properties properties) {
         var container = new ObjectContainer();
         var containerProperties = container.getProperties();
-        properties.keySet().forEach(
-                x -> containerProperties.setProperty(x.toString(), properties.getProperty(x.toString()))
+        properties.stringPropertyNames().forEach(
+                x -> containerProperties.setProperty(x, properties.getProperty(x))
         );
 
         return container;

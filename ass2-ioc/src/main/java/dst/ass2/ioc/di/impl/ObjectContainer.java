@@ -11,14 +11,17 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class ObjectContainer implements IObjectContainer {
     private final Properties properties = new Properties();
     private final Map<Class<?>, Object> singletonCache = new ConcurrentHashMap<>();
-    private final ReadWriteLock lock = new ReentrantReadWriteLock();
+    private final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
+    private final Lock propsLock = new ReentrantLock();
 
     @Override
     public Properties getProperties() {
@@ -39,12 +42,12 @@ public class ObjectContainer implements IObjectContainer {
 
         if (isSingleton) {
             try {
-                lock.readLock().lock();
+                cacheLock.readLock().lock();
                 if (singletonCache.containsKey(type)) {
                     return (T) singletonCache.get(type);
                 }
             } finally {
-                lock.readLock().unlock();
+                cacheLock.readLock().unlock();
             }
         }
 
@@ -72,24 +75,24 @@ public class ObjectContainer implements IObjectContainer {
             instance = constructor.newInstance();
             if (isSingleton) {
                 try {
-                    lock.writeLock().lock();
+                    cacheLock.writeLock().lock();
                     singletonCache.put(type, instance);
                 } finally {
-                    lock.writeLock().unlock();
+                    cacheLock.writeLock().unlock();
                 }
             }
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new InjectionException("Cannot instantiate " + type);
         }
 
-        injectProperties(type, instance);
-        injectFields(type, instance);
+        runPropertyInjection(type, instance);
+        runConstructorInjection(type, instance);
         runInitialization(type, instance);
 
         return instance;
     }
 
-    private <T> void injectFields(Class<T> type, T instance) {
+    private <T> void runConstructorInjection(Class<T> type, T instance) {
         var fieldsToInject = getFieldsForAnnotation(type, Inject.class);
 
         fieldsToInject.forEach(x -> injectFieldOfObject(x, instance));
@@ -151,15 +154,16 @@ public class ObjectContainer implements IObjectContainer {
 
     }
 
-    private <T> void injectProperties(Class<T> type, T instance) {
+    private <T> void runPropertyInjection(Class<T> type, T instance) {
         var fieldsToInject = getFieldsForAnnotation(type, Property.class);
+        Properties currentProperties = (Properties) properties.clone();
 
-        fieldsToInject.forEach(x -> injectFieldFromProperty(x, instance));
+        fieldsToInject.forEach(x -> injectFieldFromProperty(x, instance, currentProperties));
     }
 
-    private <T> void injectFieldFromProperty(Field field, T instance) {
+    private <T> void injectFieldFromProperty(Field field, T instance, Properties currentProperties) {
         var propertyKey = field.getAnnotation(Property.class).value();
-        var propertyString = properties.getProperty(propertyKey);
+        var propertyString = currentProperties.getProperty(propertyKey);
         if (propertyString == null) {
             throw new ObjectCreationException(
                     "Attempted to inject unknown property " + propertyKey + " in " + field.getName());
