@@ -9,8 +9,13 @@ public final class ObjectContainerFactory implements IObjectContainerFactory {
 
     @Override
     public IObjectContainer newObjectContainer(Properties properties) {
-        // TODO: implement
-        return null;
+        var container = new ObjectContainer();
+        var containerProperties = container.getProperties();
+        properties.keySet().forEach(
+                x -> containerProperties.setProperty(x.toString(), properties.getProperty(x.toString()))
+        );
+
+        return container;
     }
 
 }
