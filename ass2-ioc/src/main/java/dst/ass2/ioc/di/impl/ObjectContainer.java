@@ -11,11 +11,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class ObjectContainer implements IObjectContainer {
     private final Properties properties = new Properties();
     private final Map<Class<?>, Object> singletonCache = new ConcurrentHashMap<>();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     @Override
     public Properties getProperties() {
@@ -33,9 +36,15 @@ public class ObjectContainer implements IObjectContainer {
 
         //Checks cache for singletons
         var isSingleton = componentAnnotation.scope().equals(Scope.SINGLETON);
+
         if (isSingleton) {
-            if (singletonCache.containsKey(type)) {
-                return (T) singletonCache.get(type);
+            try {
+                lock.readLock().lock();
+                if (singletonCache.containsKey(type)) {
+                    return (T) singletonCache.get(type);
+                }
+            } finally {
+                lock.readLock().unlock();
             }
         }
 
@@ -62,7 +71,12 @@ public class ObjectContainer implements IObjectContainer {
             constructor.setAccessible(true);
             instance = constructor.newInstance();
             if (isSingleton) {
-                singletonCache.put(type, instance);
+                try {
+                    lock.writeLock().lock();
+                    singletonCache.put(type, instance);
+                } finally {
+                    lock.writeLock().unlock();
+                }
             }
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new InjectionException("Cannot instantiate " + type);
