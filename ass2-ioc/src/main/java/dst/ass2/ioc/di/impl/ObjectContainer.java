@@ -6,21 +6,22 @@ import dst.ass2.ioc.di.InjectionException;
 import dst.ass2.ioc.di.InvalidDeclarationException;
 import dst.ass2.ioc.di.ObjectCreationException;
 import dst.ass2.ioc.di.annotation.Component;
+import dst.ass2.ioc.di.annotation.Initialize;
 import dst.ass2.ioc.di.annotation.Inject;
 import dst.ass2.ioc.di.annotation.Scope;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ObjectContainer implements IObjectContainer {
     private final Properties properties = new Properties();
-    private final Map<Class<?>, Object> singletonCache = new HashMap<>();
+    private final Map<Class<?>, Object> singletonCache = new ConcurrentHashMap<>();
 
     @Override
     public Properties getProperties() {
@@ -29,25 +30,22 @@ public class ObjectContainer implements IObjectContainer {
 
     @Override
     public <T> T getObject(Class<T> type) throws dst.ass2.ioc.di.InjectionException {
-        //This function autowires an object of given class
 
-        //invalid declaration exception if no @Component annotation
+        //Ensures class is injectable
         var componentAnnotation = type.getAnnotation(Component.class);
         if (componentAnnotation == null) {
-            throw new InvalidDeclarationException(type + " not annotated"+ Arrays.toString(type.getDeclaredAnnotations()));
+            throw new InvalidDeclarationException(type + " not annotated");
         }
+
+        //Checks cache for singletons
         var isSingleton = componentAnnotation.scope().equals(Scope.SINGLETON);
-
-        if (Modifier.isAbstract(type.getModifiers()) ||
-                Modifier.isInterface(type.getModifiers())) {
-        }
-
         if (isSingleton) {
             if (singletonCache.containsKey(type)) {
                 return (T) singletonCache.get(type);
             }
         }
 
+        //Access default class constructor
         Constructor<T> constructor;
         try {
             constructor = type.getConstructor();
@@ -55,60 +53,78 @@ public class ObjectContainer implements IObjectContainer {
             throw new ObjectCreationException(type + " has no default constructor!");
         }
 
+        //Generate new instance, handles abstract class constructors
         T instance;
         try {
             instance = constructor.newInstance();
+            if (isSingleton) {
+                singletonCache.put(type, instance);
+            }
         } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new InjectionException("Cannot instantiate " + type);
         }
 
-        if (isSingleton) {
-            singletonCache.put(type, instance);
-        }
-
-
-        //iterate over every field of the class
-        var fieldsList = Arrays.stream(type.getDeclaredFields()).collect(Collectors.toList());
-
-        var fieldsToInject = fieldsList.stream()
+        var fieldsToInject = Arrays
+                .stream(type.getDeclaredFields())
                 .filter(x -> x.getAnnotation(Inject.class) != null)
                 .collect(Collectors.toList());
 
-        if (fieldsToInject.isEmpty()) {
-            return instance;
-        }
+        fieldsToInject.forEach(x -> setFieldOfObject(x, instance));
 
-        fieldsToInject.forEach(x ->
-        {
-            try {
-                var classToInject = x.getAnnotation(Inject.class).targetType();
-                classToInject = classToInject == Void.class ? x.getType() : classToInject;
+        var initMethods = Arrays
+                .stream(type.getDeclaredMethods())
+                .filter(x -> x.getAnnotation(Initialize.class) != null)
+                .collect(Collectors.toList());
 
-                if (!x.getType().isAssignableFrom(classToInject)){
-                    if (!x.getAnnotation(Inject.class).optional()) {
-                        throw new InvalidDeclarationException("Attempted to inject non type-compatible dependency");
-                    }
-                }
-
-                var fieldInstance = getObject(classToInject);
-                x.setAccessible(true);
-                x.set(instance, fieldInstance);
-
-
-            } catch (InvalidDeclarationException e) {
-                if (!x.getAnnotation(Inject.class).optional()) {
-                    throw new InvalidDeclarationException(e.getMessage());
-                }
-            } catch (ObjectCreationException e) {
-                if (!x.getAnnotation(Inject.class).optional()) {
-                    throw new ObjectCreationException(e.getMessage());
-                }
-            } catch (IllegalAccessException | InjectionException e) {
-                if (!x.getAnnotation(Inject.class).optional()) {
-                    throw new InjectionException(e.getMessage());
-                }
+        initMethods.forEach(x -> {
+            if (x.getParameterCount() != 0) {
+                throw new InvalidDeclarationException("Initialization method " + x + " has more than 0 parameters");
             }
         });
+
+        initMethods.forEach(
+                x-> {
+                    try {
+                        x.setAccessible(true);
+                        x.invoke(instance);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new ObjectCreationException(e);
+                    }
+                }
+        );
+
+
         return instance;
+    }
+
+    private void setFieldOfObject(Field field, Object instance) {
+        try {
+            var classToInject = field.getAnnotation(Inject.class).targetType();
+            classToInject = classToInject == Void.class ? field.getType() : classToInject;
+
+            if (!field.getType().isAssignableFrom(classToInject)) {
+                if (!field.getAnnotation(Inject.class).optional()) {
+                    throw new InvalidDeclarationException("Attempted to inject non type-compatible dependency");
+                }
+            }
+
+            var fieldInstance = getObject(classToInject);
+            field.setAccessible(true);
+            field.set(instance, fieldInstance);
+
+
+        } catch (InvalidDeclarationException e) {
+            if (!field.getAnnotation(Inject.class).optional()) {
+                throw new InvalidDeclarationException(e.getMessage());
+            }
+        } catch (ObjectCreationException e) {
+            if (!field.getAnnotation(Inject.class).optional()) {
+                throw new ObjectCreationException(e.getMessage());
+            }
+        } catch (IllegalAccessException | InjectionException e) {
+            if (!field.getAnnotation(Inject.class).optional()) {
+                throw new InjectionException(e.getMessage());
+            }
+        }
     }
 }
