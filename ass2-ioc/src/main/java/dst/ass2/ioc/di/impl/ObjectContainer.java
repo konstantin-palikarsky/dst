@@ -133,7 +133,7 @@ public class ObjectContainer implements IObjectContainer {
      * This method will call the initialization methods in order of declaration
      * starting at the top of the class hierarchy and moving down,
      * we make no guarantees of order within the same class' init methods.
-     *
+     * <p>
      * Singletons are only going to run initialization once
      */
     private <T> void runInitialization(Class<T> type, T instance) {
@@ -241,7 +241,7 @@ public class ObjectContainer implements IObjectContainer {
 
     // Taken from Stack Overflow
     // https://stackoverflow.com/questions/1042798/retrieving-the-inherited-attribute-names-values-using-java-reflection
-    public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+    public List<Field> getAllFields(List<Field> fields, Class<?> type) {
         fields.addAll(Arrays.asList(type.getDeclaredFields()));
 
         if (type.getSuperclass() != null) {
@@ -251,11 +251,28 @@ public class ObjectContainer implements IObjectContainer {
         return fields;
     }
 
-    public static List<Method> getAllMethods(List<Method> fields, Class<?> type) {
+    public List<Method> getAllMethods(List<Method> fields, Class<?> type) {
         fields.addAll(0, Arrays.asList(type.getDeclaredMethods()));
 
-        if (type.getSuperclass() != null) {
-            getAllMethods(fields, type.getSuperclass());
+        try {
+
+            cacheLock.writeLock().lock();
+            var superClass = type.getSuperclass();
+
+            if (superClass != null &&
+                    superClass.getAnnotation(Component.class) != null &&
+                    !singletonCache.containsKey(superClass)
+            ) {
+                if (superClass.getAnnotation(Component.class).scope().equals(Scope.SINGLETON)) {
+                    getObject(superClass);
+                    return fields;
+                }
+
+                getAllMethods(fields, type.getSuperclass());
+            }
+
+        } finally {
+            cacheLock.writeLock().unlock();
         }
 
         return fields;

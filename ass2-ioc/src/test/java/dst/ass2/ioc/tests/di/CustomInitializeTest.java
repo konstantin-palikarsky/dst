@@ -15,7 +15,6 @@ import static org.junit.Assert.assertTrue;
 
 public class CustomInitializeTest {
 
-    private IObjectContainerFactory factory;
     private IObjectContainer container;
     private static long value;
     private static long second_value;
@@ -23,7 +22,7 @@ public class CustomInitializeTest {
 
     @Before
     public void setUp() throws Exception {
-        factory = new ObjectContainerFactory();
+        IObjectContainerFactory factory = new ObjectContainerFactory();
         container = factory.newObjectContainer(new Properties());
         value = 0L;
         second_value = 0L;
