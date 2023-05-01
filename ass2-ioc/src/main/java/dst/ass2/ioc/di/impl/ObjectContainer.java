@@ -6,14 +6,17 @@ import dst.ass2.ioc.di.InjectionException;
 import dst.ass2.ioc.di.InvalidDeclarationException;
 import dst.ass2.ioc.di.ObjectCreationException;
 import dst.ass2.ioc.di.annotation.Component;
+import dst.ass2.ioc.di.annotation.Inject;
 import dst.ass2.ioc.di.annotation.Scope;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class ObjectContainer implements IObjectContainer {
     private final Properties properties = new Properties();
@@ -31,7 +34,7 @@ public class ObjectContainer implements IObjectContainer {
         //invalid declaration exception if no @Component annotation
         var componentAnnotation = type.getAnnotation(Component.class);
         if (componentAnnotation == null) {
-            throw new InvalidDeclarationException(type + " not annotated");
+            throw new InvalidDeclarationException(type + " not annotated"+ Arrays.toString(type.getDeclaredAnnotations()));
         }
         var isSingleton = componentAnnotation.scope().equals(Scope.SINGLETON);
 
@@ -65,12 +68,47 @@ public class ObjectContainer implements IObjectContainer {
 
 
         //iterate over every field of the class
-        //create every single dependency however many layers deep for the object graph
-        //optional dependancies exist
-        //handle target type injections
-        //no handling of circular dependencies
-        //wrap and pass all exceptions
+        var fieldsList = Arrays.stream(type.getDeclaredFields()).collect(Collectors.toList());
 
+        var fieldsToInject = fieldsList.stream()
+                .filter(x -> x.getAnnotation(Inject.class) != null)
+                .collect(Collectors.toList());
+
+        if (fieldsToInject.isEmpty()) {
+            return instance;
+        }
+
+        fieldsToInject.forEach(x ->
+        {
+            try {
+                var classToInject = x.getAnnotation(Inject.class).targetType();
+                classToInject = classToInject == Void.class ? x.getType() : classToInject;
+
+                if (!x.getType().isAssignableFrom(classToInject)){
+                    if (!x.getAnnotation(Inject.class).optional()) {
+                        throw new InvalidDeclarationException("Attempted to inject non type-compatible dependency");
+                    }
+                }
+
+                var fieldInstance = getObject(classToInject);
+                x.setAccessible(true);
+                x.set(instance, fieldInstance);
+
+
+            } catch (InvalidDeclarationException e) {
+                if (!x.getAnnotation(Inject.class).optional()) {
+                    throw new InvalidDeclarationException(e.getMessage());
+                }
+            } catch (ObjectCreationException e) {
+                if (!x.getAnnotation(Inject.class).optional()) {
+                    throw new ObjectCreationException(e.getMessage());
+                }
+            } catch (IllegalAccessException | InjectionException e) {
+                if (!x.getAnnotation(Inject.class).optional()) {
+                    throw new InjectionException(e.getMessage());
+                }
+            }
+        });
         return instance;
     }
 }
