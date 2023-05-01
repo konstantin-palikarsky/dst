@@ -94,19 +94,6 @@ public class TripService implements ITripService {
 
     @Override
     public void match(Long tripId, MatchDTO match) throws EntityNotFoundException, DriverNotAvailableException, IllegalStateException {
-        /**
-         * Creates a match for the given trip and sets the trip's state to MATCHED, if possible (i.e., if the trips is
-         * QUEUED). In case something goes wrong, re-queues the trip for a new match.
-         * You can assume that the locations (pickup, destination and stops) haven't been deleted and will not be deleted
-         * during the execution of this method.
-         *
-         * @param tripId the id of the trip the match will be created for
-         * @param match  the match, containing the driver, the vehicle and the fare
-         * @throws EntityNotFoundException     in case one of the following doesn't exist anymore: trip, driver or
-         *                                     vehicle
-         * @throws DriverNotAvailableException in case the driver was assigned in the meantime to another customer
-         * @throws IllegalStateException       in case the rider of the trip is null or the trip is not in QUEUED state
-         */
         var tripEntity = tripRepository.findById(tripId);
         var driverEntity = driverRepository.findById(match.getDriverId());
         var vehicleEntity = vehicleRepository.findById(match.getVehicleId());
@@ -220,7 +207,6 @@ public class TripService implements ITripService {
         if (!dtoStops.contains(locationId)) {
             return false;
         }
-
 
 
         if (!tripEntity.getState().equals(TripState.CREATED)) {

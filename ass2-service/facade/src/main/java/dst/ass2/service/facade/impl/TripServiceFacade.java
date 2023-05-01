@@ -9,19 +9,16 @@ import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.URL;
 
 @Path("/trips")
 public class TripServiceFacade implements ITripServiceResource {
-    @Inject
-    private URL tripServiceURI;
+
     private ITripServiceResource realService;
 
     @PostConstruct
@@ -32,7 +29,8 @@ public class TripServiceFacade implements ITripServiceResource {
 
 
         Client client = ClientBuilder.newClient(configuration);
-        WebTarget webTarget = client.target(tripServiceURI.toString());
+        //Hardcoded for now
+        WebTarget webTarget = client.target("http://localhost:8091/");
 
         realService = WebResourceFactory.newResource(ITripServiceResource.class, webTarget);
     }
@@ -41,7 +39,6 @@ public class TripServiceFacade implements ITripServiceResource {
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @RequireAuth
     public Response getTrip(@PathParam("id") Long tripId)
             throws EntityNotFoundException {
@@ -52,7 +49,6 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @RequireAuth
     public Response createTrip(@FormParam("riderId") Long riderId,
                                @FormParam("pickupId") Long pickupId,
@@ -65,8 +61,6 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @DELETE
     @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @RequireAuth
     public Response deleteTrip(@PathParam("id") Long tripId)
             throws EntityNotFoundException {
@@ -79,7 +73,6 @@ public class TripServiceFacade implements ITripServiceResource {
     @POST
     @Path("/{id}/stops")
     @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @RequireAuth
     public Response addStop(@PathParam("id") Long tripId,
                             @FormParam("locationId") Long locationId)
@@ -91,8 +84,6 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @DELETE
     @Path("/{id}/stops/{locationId}")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @RequireAuth
     public Response removeStop(@PathParam("id") Long tripId,
                                @PathParam("locationId") Long locationId)
@@ -104,8 +95,6 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @PATCH
     @Path("/{id}/confirm")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @RequireAuth
     public Response confirm(@PathParam("id") Long tripId)
             throws EntityNotFoundException, InvalidTripException {
@@ -117,7 +106,6 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @POST
     @Path("/{id}/match")
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @RequireAuth
     public Response match(@PathParam("id") Long tripId,
@@ -130,8 +118,6 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @PATCH
     @Path("/{id}/cancel")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @RequireAuth
     public Response cancel(@PathParam("id") Long tripId)
             throws EntityNotFoundException {
@@ -142,7 +128,6 @@ public class TripServiceFacade implements ITripServiceResource {
     @Override
     @POST
     @Path("/{id}/complete")
-    @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @RequireAuth
     public Response complete(@PathParam("id") Long tripId, TripInfoDTO tripInfoDTO)

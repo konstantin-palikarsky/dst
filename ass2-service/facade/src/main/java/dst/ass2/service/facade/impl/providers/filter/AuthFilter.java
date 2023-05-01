@@ -19,14 +19,13 @@ public class AuthFilter implements ContainerRequestFilter {
 
     @Override
     public void filter(ContainerRequestContext requestContext) {
-        String authHeader = requestContext.getHeaderString("Authorization");
+        String authHeader = requestContext.getHeaderString("authorization");
 
         if (authHeader == null || authHeader.isEmpty()) {
             requestContext.abortWith(Response.status(
                     Response.Status.UNAUTHORIZED).build());
             return;
         }
-
         var authToken = parseAuthHeader(authHeader);
 
 

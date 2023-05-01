@@ -7,7 +7,6 @@ import io.grpc.ServerBuilder;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 @ManagedBean
 public class GrpcServerRunner implements IGrpcServerRunner {
@@ -29,7 +28,7 @@ public class GrpcServerRunner implements IGrpcServerRunner {
 
         server.start();
         try {
-            server.awaitTermination(2, TimeUnit.SECONDS);
+            server.awaitTermination();
         } catch (InterruptedException ignored) {
         }
 
