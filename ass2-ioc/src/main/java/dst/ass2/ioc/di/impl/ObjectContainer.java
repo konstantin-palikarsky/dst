@@ -129,6 +129,13 @@ public class ObjectContainer implements IObjectContainer {
         }
     }
 
+    /**
+     * This method will call the initialization methods in order of declaration
+     * starting at the top of the class hierarchy and moving down,
+     * we make no guarantees of order within the same class' init methods.
+     *
+     * Singletons are only going to run initialization once
+     */
     private <T> void runInitialization(Class<T> type, T instance) {
         var initMethods = getAllMethods(new ArrayList<>(), type)
                 .stream()
@@ -245,7 +252,7 @@ public class ObjectContainer implements IObjectContainer {
     }
 
     public static List<Method> getAllMethods(List<Method> fields, Class<?> type) {
-        fields.addAll(Arrays.asList(type.getDeclaredMethods()));
+        fields.addAll(0, Arrays.asList(type.getDeclaredMethods()));
 
         if (type.getSuperclass() != null) {
             getAllMethods(fields, type.getSuperclass());
