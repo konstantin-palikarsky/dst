@@ -1,14 +1,8 @@
 package dst.ass2.ioc.di.impl;
 
 
-import dst.ass2.ioc.di.IObjectContainer;
-import dst.ass2.ioc.di.InjectionException;
-import dst.ass2.ioc.di.InvalidDeclarationException;
-import dst.ass2.ioc.di.ObjectCreationException;
-import dst.ass2.ioc.di.annotation.Component;
-import dst.ass2.ioc.di.annotation.Initialize;
-import dst.ass2.ioc.di.annotation.Inject;
-import dst.ass2.ioc.di.annotation.Scope;
+import dst.ass2.ioc.di.*;
+import dst.ass2.ioc.di.annotation.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -48,14 +42,24 @@ public class ObjectContainer implements IObjectContainer {
         //Access default class constructor
         Constructor<T> constructor;
         try {
-            constructor = type.getConstructor();
+            var constructors = type.getDeclaredConstructors();
+            if (constructors.length < 1) {
+                throw new NoSuchMethodException();
+            }
+
+            constructor = (Constructor<T>) Arrays.stream(constructors).filter(
+                    x -> x.getParameterCount() < 1).collect(Collectors.toList()).get(0);
+
+
         } catch (NoSuchMethodException e) {
             throw new ObjectCreationException(type + " has no default constructor!");
         }
 
+
         //Generate new instance, handles abstract class constructors
         T instance;
         try {
+            constructor.setAccessible(true);
             instance = constructor.newInstance();
             if (isSingleton) {
                 singletonCache.put(type, instance);
@@ -64,51 +68,34 @@ public class ObjectContainer implements IObjectContainer {
             throw new InjectionException("Cannot instantiate " + type);
         }
 
+        injectProperties(type, instance);
+        injectFields(type, instance);
+        runInitialization(type, instance);
+
+        return instance;
+    }
+
+    private <T> void injectFields(Class<T> type, T instance) {
         var fieldsToInject = Arrays
                 .stream(type.getDeclaredFields())
                 .filter(x -> x.getAnnotation(Inject.class) != null)
                 .collect(Collectors.toList());
 
-        fieldsToInject.forEach(x -> setFieldOfObject(x, instance));
-
-        var initMethods = Arrays
-                .stream(type.getDeclaredMethods())
-                .filter(x -> x.getAnnotation(Initialize.class) != null)
-                .collect(Collectors.toList());
-
-        initMethods.forEach(x -> {
-            if (x.getParameterCount() != 0) {
-                throw new InvalidDeclarationException("Initialization method " + x + " has more than 0 parameters");
-            }
-        });
-
-        initMethods.forEach(
-                x-> {
-                    try {
-                        x.setAccessible(true);
-                        x.invoke(instance);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new ObjectCreationException(e);
-                    }
-                }
-        );
-
-
-        return instance;
+        fieldsToInject.forEach(x -> injectFieldOfObject(x, instance));
     }
 
-    private void setFieldOfObject(Field field, Object instance) {
+    private <T> void injectFieldOfObject(Field field, T instance) {
         try {
-            var classToInject = field.getAnnotation(Inject.class).targetType();
-            classToInject = classToInject == Void.class ? field.getType() : classToInject;
+            var fieldTargetClass = field.getAnnotation(Inject.class).targetType();
+            fieldTargetClass = fieldTargetClass == Void.class ? field.getType() : fieldTargetClass;
 
-            if (!field.getType().isAssignableFrom(classToInject)) {
+            if (!field.getType().isAssignableFrom(fieldTargetClass)) {
                 if (!field.getAnnotation(Inject.class).optional()) {
                     throw new InvalidDeclarationException("Attempted to inject non type-compatible dependency");
                 }
             }
 
-            var fieldInstance = getObject(classToInject);
+            var fieldInstance = getObject(fieldTargetClass);
             field.setAccessible(true);
             field.set(instance, fieldInstance);
 
@@ -127,4 +114,106 @@ public class ObjectContainer implements IObjectContainer {
             }
         }
     }
+
+    private <T> void runInitialization(Class<T> type, T instance) {
+        var initMethods = Arrays
+                .stream(type.getDeclaredMethods())
+                .filter(x -> x.getAnnotation(Initialize.class) != null)
+                .collect(Collectors.toList());
+
+        initMethods.forEach(x -> {
+            if (x.getParameterCount() != 0) {
+                throw new InvalidDeclarationException("Initialization method " + x + " has more than 0 parameters");
+            }
+        });
+
+        initMethods.forEach(
+                x -> {
+                    try {
+                        x.setAccessible(true);
+                        x.invoke(instance);
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        throw new ObjectCreationException(e);
+                    }
+                }
+        );
+
+    }
+
+    private <T> void injectProperties(Class<T> type, T instance) {
+        var fieldsToInject = Arrays
+                .stream(type.getDeclaredFields())
+                .filter(x -> x.getAnnotation(Property.class) != null)
+                .collect(Collectors.toList());
+
+        fieldsToInject.forEach(x -> injectFieldFromProperty(x, instance));
+    }
+
+    private <T> void injectFieldFromProperty(Field field, T instance) {
+        var propertyKey = field.getAnnotation(Property.class).value();
+        var propertyString = properties.get(propertyKey);
+        if (propertyString == null) {
+            throw new ObjectCreationException(
+                    "Attempted to inject unknown property " + propertyKey + " in " + field.getName());
+        }
+
+        var fieldType = field.getType();
+        Object properFieldValue;
+        try {
+            properFieldValue = transformStringToType(propertyString.toString(), fieldType);
+        } catch (Exception e) {
+            throw new TypeConversionException(e.getMessage());
+        }
+
+        try {
+            field.setAccessible(true);
+            field.set(instance, properFieldValue);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private <T> Object transformStringToType(String s, Class<T> type) {
+        System.err.println(type);
+
+        if (type.isAssignableFrom(Integer.class) ||
+                type.isAssignableFrom(int.class)) {
+            return Integer.parseInt(s);
+
+        } else if (type.isAssignableFrom(Byte.class) ||
+                type.isAssignableFrom(byte.class)) {
+            return Byte.parseByte(s);
+
+        } else if (type.isAssignableFrom(Short.class) ||
+                type.isAssignableFrom(short.class)) {
+            return Short.parseShort(s);
+
+        } else if (type.isAssignableFrom(Long.class) ||
+                type.isAssignableFrom(long.class)) {
+            return Long.parseLong(s);
+
+        } else if (type.isAssignableFrom(Float.class) ||
+                type.isAssignableFrom(float.class)) {
+            return Float.parseFloat(s);
+
+        } else if (type.isAssignableFrom(Double.class) ||
+                type.isAssignableFrom(double.class)) {
+            return Double.parseDouble(s);
+
+        } else if (type.isAssignableFrom(Boolean.class) ||
+                type.isAssignableFrom(boolean.class)) {
+            return Boolean.parseBoolean(s);
+
+        } else if (type.isAssignableFrom(Character.class) ||
+                type.isAssignableFrom(char.class)) {
+            return s.charAt(0);
+
+        } else if (String.class.equals(type)) {
+            return s;
+
+        }
+
+        throw new TypeConversionException("Attempted to inject a property of non-primitive type");
+    }
+
 }
