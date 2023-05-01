@@ -7,6 +7,8 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.HttpUrlConnectorProvider;
 import org.glassfish.jersey.client.proxy.WebResourceFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.*;
@@ -20,6 +22,8 @@ import javax.ws.rs.core.Response;
 public class TripServiceFacade implements ITripServiceResource {
 
     private ITripServiceResource realService;
+
+    private static final Logger LOG = LoggerFactory.getLogger(TripServiceFacade.class);
 
     @PostConstruct
     private void setup() {
@@ -42,6 +46,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @RequireAuth
     public Response getTrip(@PathParam("id") Long tripId)
             throws EntityNotFoundException {
+        LOG.info("Getting trip {}", tripId);
 
         return realService.getTrip(tripId);
     }
@@ -54,6 +59,8 @@ public class TripServiceFacade implements ITripServiceResource {
                                @FormParam("pickupId") Long pickupId,
                                @FormParam("destinationId") Long destinationId)
             throws EntityNotFoundException {
+        LOG.info("Creating trip for rider {}, pickup {}, and destination {}",
+                riderId, pickupId, destinationId);
 
         return realService.createTrip(riderId, pickupId, destinationId);
     }
@@ -64,6 +71,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @RequireAuth
     public Response deleteTrip(@PathParam("id") Long tripId)
             throws EntityNotFoundException {
+        LOG.info("Deleting trip {}", tripId);
 
         return realService.deleteTrip(tripId);
     }
@@ -77,6 +85,7 @@ public class TripServiceFacade implements ITripServiceResource {
     public Response addStop(@PathParam("id") Long tripId,
                             @FormParam("locationId") Long locationId)
             throws EntityNotFoundException {
+        LOG.info("Adding stop {} to trip {}", locationId, tripId);
 
         return realService.addStop(tripId, locationId);
     }
@@ -88,6 +97,7 @@ public class TripServiceFacade implements ITripServiceResource {
     public Response removeStop(@PathParam("id") Long tripId,
                                @PathParam("locationId") Long locationId)
             throws EntityNotFoundException {
+        LOG.info("Removing stop {} from trip {}", locationId, tripId);
 
         return realService.removeStop(tripId, locationId);
     }
@@ -98,6 +108,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @RequireAuth
     public Response confirm(@PathParam("id") Long tripId)
             throws EntityNotFoundException, InvalidTripException {
+        LOG.info("Confirming trip {}", tripId);
 
         return realService.confirm(tripId);
     }
@@ -111,6 +122,7 @@ public class TripServiceFacade implements ITripServiceResource {
     public Response match(@PathParam("id") Long tripId,
                           MatchDTO matchDTO)
             throws EntityNotFoundException, DriverNotAvailableException {
+        LOG.info("Matching trip {}", tripId);
 
         return realService.match(tripId, matchDTO);
     }
@@ -121,6 +133,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @RequireAuth
     public Response cancel(@PathParam("id") Long tripId)
             throws EntityNotFoundException {
+        LOG.info("Cancelling trip {}", tripId);
 
         return realService.cancel(tripId);
     }
@@ -132,6 +145,7 @@ public class TripServiceFacade implements ITripServiceResource {
     @RequireAuth
     public Response complete(@PathParam("id") Long tripId, TripInfoDTO tripInfoDTO)
             throws EntityNotFoundException {
+        LOG.info("Completing trip {}, on {}", tripId, tripInfoDTO.getCompleted());
 
         return realService.complete(tripId, tripInfoDTO);
     }

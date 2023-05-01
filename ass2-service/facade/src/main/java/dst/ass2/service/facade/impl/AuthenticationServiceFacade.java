@@ -4,6 +4,8 @@ import dst.ass2.service.api.auth.AuthenticationException;
 import dst.ass2.service.api.auth.NoSuchUserException;
 import dst.ass2.service.api.auth.rest.IAuthenticationResource;
 import dst.ass2.service.auth.client.IAuthenticationClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.ws.rs.FormParam;
@@ -19,6 +21,8 @@ public class AuthenticationServiceFacade implements IAuthenticationResource {
     @Inject
     private IAuthenticationClient authClient;
 
+    private static final Logger LOG = LoggerFactory.getLogger(AuthenticationServiceFacade.class);
+
     @Override
     @POST
     @Path("/authenticate")
@@ -26,6 +30,7 @@ public class AuthenticationServiceFacade implements IAuthenticationResource {
     public Response authenticate(@FormParam("email") String email,
                                  @FormParam("password") String password)
             throws NoSuchUserException, AuthenticationException {
+        LOG.info("Authenticating user {}", email);
         var auth = authClient.authenticate(email, password);
 
         return Response.ok().entity(auth).build();
