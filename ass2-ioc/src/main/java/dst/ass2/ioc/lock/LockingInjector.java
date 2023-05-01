@@ -19,7 +19,6 @@ public class LockingInjector implements ClassFileTransformer {
                             ProtectionDomain protectionDomain,
                             byte[] classfileBuffer) throws IllegalClassFormatException {
 
-        // TODO transform all @Lock annotated methods of classes with a @Component annotation
         try {
             byte[] byteCode = classfileBuffer;
 
@@ -56,27 +55,15 @@ public class LockingInjector implements ClassFileTransformer {
     }
 
     private void addLockingToMethod(CtMethod method) {
-        System.err.println("Pretend I transformed a method");
         try {
-            /*
-            var methodInfo = method.getMethodInfo2();
-            var attr = (AnnotationsAttribute) methodInfo.getAttribute(AnnotationsAttribute.visibleTag);
-            var an = attr.getAnnotation("Lock");
-            var lockName = ((StringMemberValue) an.getMemberValue("value")).getValue();
-            */
-
             var lockName = ((Lock) method.getAnnotation(Lock.class)).value();
-            System.err.println("Trying to get lock: " + lockName + "for " + method.getName());
 
             method.insertBefore("dst.ass2.ioc.lock.LockManager.lock(\"" + lockName + "\");");
             method.insertAfter("dst.ass2.ioc.lock.LockManager.unlock(\"" + lockName + "\");", true);
 
-        } catch (CannotCompileException e) {
+        } catch (CannotCompileException | ClassNotFoundException e) {
             throw new RuntimeException("Error adding locking to " + method.getName() + ":" + e.getMessage());
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
-
     }
 
 }

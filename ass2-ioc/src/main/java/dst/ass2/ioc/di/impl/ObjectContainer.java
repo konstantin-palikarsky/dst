@@ -159,7 +159,7 @@ public class ObjectContainer implements IObjectContainer {
 
     private <T> void injectFieldFromProperty(Field field, T instance) {
         var propertyKey = field.getAnnotation(Property.class).value();
-        var propertyString = properties.get(propertyKey);
+        var propertyString = properties.getProperty(propertyKey);
         if (propertyString == null) {
             throw new ObjectCreationException(
                     "Attempted to inject unknown property " + propertyKey + " in " + field.getName());
@@ -168,7 +168,7 @@ public class ObjectContainer implements IObjectContainer {
         var fieldType = field.getType();
         Object properFieldValue;
         try {
-            properFieldValue = transformStringToType(propertyString.toString(), fieldType);
+            properFieldValue = transformStringToType(propertyString, fieldType);
         } catch (Exception e) {
             throw new TypeConversionException(e.getMessage());
         }
