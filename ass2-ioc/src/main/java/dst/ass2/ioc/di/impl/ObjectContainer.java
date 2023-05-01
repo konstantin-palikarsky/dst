@@ -4,12 +4,12 @@ package dst.ass2.ioc.di.impl;
 import dst.ass2.ioc.di.*;
 import dst.ass2.ioc.di.annotation.*;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Properties;
+import java.lang.reflect.Method;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -76,10 +76,7 @@ public class ObjectContainer implements IObjectContainer {
     }
 
     private <T> void injectFields(Class<T> type, T instance) {
-        var fieldsToInject = Arrays
-                .stream(type.getDeclaredFields())
-                .filter(x -> x.getAnnotation(Inject.class) != null)
-                .collect(Collectors.toList());
+        var fieldsToInject = getFieldsForAnnotation(type, Inject.class);
 
         fieldsToInject.forEach(x -> injectFieldOfObject(x, instance));
     }
@@ -116,8 +113,8 @@ public class ObjectContainer implements IObjectContainer {
     }
 
     private <T> void runInitialization(Class<T> type, T instance) {
-        var initMethods = Arrays
-                .stream(type.getDeclaredMethods())
+        var initMethods = getAllMethods(new ArrayList<>(), type)
+                .stream()
                 .filter(x -> x.getAnnotation(Initialize.class) != null)
                 .collect(Collectors.toList());
 
@@ -141,10 +138,7 @@ public class ObjectContainer implements IObjectContainer {
     }
 
     private <T> void injectProperties(Class<T> type, T instance) {
-        var fieldsToInject = Arrays
-                .stream(type.getDeclaredFields())
-                .filter(x -> x.getAnnotation(Property.class) != null)
-                .collect(Collectors.toList());
+        var fieldsToInject = getFieldsForAnnotation(type, Property.class);
 
         fieldsToInject.forEach(x -> injectFieldFromProperty(x, instance));
     }
@@ -174,8 +168,6 @@ public class ObjectContainer implements IObjectContainer {
     }
 
     private <T> Object transformStringToType(String s, Class<T> type) {
-        System.err.println(type);
-
         if (type.isAssignableFrom(Integer.class) ||
                 type.isAssignableFrom(int.class)) {
             return Integer.parseInt(s);
@@ -216,4 +208,31 @@ public class ObjectContainer implements IObjectContainer {
         throw new TypeConversionException("Attempted to inject a property of non-primitive type");
     }
 
+    private List<Field> getFieldsForAnnotation(Class<?> type, Class<? extends Annotation> annotation) {
+        return getAllFields(new ArrayList<Field>(), type).stream()
+                .filter(x -> x.getAnnotation(annotation) != null)
+                .collect(Collectors.toList());
+    }
+
+    // Taken from Stack Overflow
+    // https://stackoverflow.com/questions/1042798/retrieving-the-inherited-attribute-names-values-using-java-reflection
+    public static List<Field> getAllFields(List<Field> fields, Class<?> type) {
+        fields.addAll(Arrays.asList(type.getDeclaredFields()));
+
+        if (type.getSuperclass() != null) {
+            getAllFields(fields, type.getSuperclass());
+        }
+
+        return fields;
+    }
+
+    public static List<Method> getAllMethods(List<Method> fields, Class<?> type) {
+        fields.addAll(Arrays.asList(type.getDeclaredMethods()));
+
+        if (type.getSuperclass() != null) {
+            getAllMethods(fields, type.getSuperclass());
+        }
+
+        return fields;
+    }
 }
