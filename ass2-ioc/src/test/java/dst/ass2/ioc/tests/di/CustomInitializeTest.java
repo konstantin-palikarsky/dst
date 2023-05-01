@@ -71,8 +71,8 @@ public class CustomInitializeTest {
         var splitSetupOrder = setupOrder.split(",");
 
         assertEquals("parent_class", splitSetupOrder[0]);
-        assertTrue(splitSetupOrder[2].contains("first_child_setup") &&
-                splitSetupOrder[2].contains("second_child_setup"));
+        assertTrue(splitSetupOrder[1].contains("first_child_setup") &&
+                splitSetupOrder[1].contains("second_child_setup"));
     }
 
 }
