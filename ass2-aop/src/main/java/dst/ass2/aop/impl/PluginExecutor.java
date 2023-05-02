@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 
 public class PluginExecutor implements IPluginExecutor {
     private final Map<File, DirectoryMonitorThread> dirToMonitorMap = new ConcurrentHashMap<>();
-    private final ExecutorService pluginRunnerPool = Executors.newFixedThreadPool(10);
+    private final ExecutorService pluginRunnerPool = Executors.newFixedThreadPool(100);
 
 
     private boolean executorIsRunning = false;
@@ -58,6 +58,7 @@ public class PluginExecutor implements IPluginExecutor {
         for (DirectoryMonitorThread thread : dirToMonitorMap.values()) {
             thread.interrupt();
         }
+
         executorIsRunning = false;
     }
 

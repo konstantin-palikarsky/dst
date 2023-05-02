@@ -240,6 +240,7 @@ public class ObjectContainer implements IObjectContainer {
     }
 
     // Taken from Stack Overflow
+    // TODO should handle singletons
     // https://stackoverflow.com/questions/1042798/retrieving-the-inherited-attribute-names-values-using-java-reflection
     public List<Field> getAllFields(List<Field> fields, Class<?> type) {
         fields.addAll(Arrays.asList(type.getDeclaredFields()));

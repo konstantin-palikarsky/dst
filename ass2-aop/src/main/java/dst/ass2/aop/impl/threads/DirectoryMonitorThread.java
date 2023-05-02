@@ -1,6 +1,8 @@
 package dst.ass2.aop.impl.threads;
 
 import dst.ass2.aop.IPluginExecutable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,10 +11,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.*;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
@@ -24,8 +25,9 @@ public class DirectoryMonitorThread extends Thread {
     private final WatchService watchService;
     private WatchKey directoryKey;
 
-    //TODO should be updated to handle file changes with no name changes
-    private final Set<String> executedPlugins = new HashSet<>();
+    private final Set<byte[]> executedPlugins = new HashSet<>();
+    private static final Logger LOG = LoggerFactory.getLogger(PluginExecutorThread.class);
+
 
     public DirectoryMonitorThread(File dir, ExecutorService pluginRunnerPool) {
         this.dir = dir;
@@ -40,7 +42,7 @@ public class DirectoryMonitorThread extends Thread {
 
     @Override
     public void run() {
-        System.err.println("Attempted to monitor " + dir.getName());
+        LOG.info("Attempted to monitor directory {}", dir.getName());
         handleInitialPlugins();
 
         try {
@@ -60,27 +62,30 @@ public class DirectoryMonitorThread extends Thread {
                 }
                 key.reset();
             }
-        } catch (InterruptedException e) {
-            System.err.println("Exiting monitor for: " + dir.getName());
+        } catch (InterruptedException ignored) {
+        } finally {
+            LOG.info("Exiting monitor for {}", dir.getName());
+            directoryKey.cancel();
         }
     }
 
 
     private void handleFile(File file) {
 
-        if (!file.exists() ||
-                executedPlugins.contains(file.getName()) || !file.getName().endsWith(".jar")) {
+        if (!file.exists() || !file.getName().endsWith(".jar") ||
+                executedPlugins.contains(hashFile(file))) {
             return;
         }
-        var pluginToExecute = getPluginExecutable(file);
-        if (pluginToExecute == null) {
+        var pluginsToExecute = getExecutablePlugins(file);
+        if (pluginsToExecute.isEmpty()) {
             return;
         }
-        pluginRunnerPool.execute(new PluginExecutorThread(pluginToExecute));
-        executedPlugins.add(file.getName());
+        pluginsToExecute.forEach(x -> pluginRunnerPool.execute(new PluginExecutorThread(x)));
+        executedPlugins.add(hashFile(file));
     }
 
-    private IPluginExecutable getPluginExecutable(File file) {
+    private List<IPluginExecutable> getExecutablePlugins(File file) {
+        var returnList = new ArrayList<IPluginExecutable>();
         try {
             ZipInputStream zip = new ZipInputStream(new FileInputStream(file.getAbsoluteFile()));
             for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
@@ -96,7 +101,7 @@ public class DirectoryMonitorThread extends Thread {
                                 x.getParameterCount() == 0).collect(Collectors.toList()).get(0);
 
                         defaultConstructor.setAccessible(true);
-                        return (IPluginExecutable) defaultConstructor.newInstance();
+                        returnList.add((IPluginExecutable) defaultConstructor.newInstance());
 
 
                     } catch (IllegalAccessException | InstantiationException | ClassNotFoundException |
@@ -107,7 +112,7 @@ public class DirectoryMonitorThread extends Thread {
         } catch (IOException e) {
             throw new RuntimeException("Catastrophal exception while parsing jar: " + file.getName());
         }
-        return null;
+        return returnList;
     }
 
     private File eventToFile(WatchEvent<?> event) {
@@ -125,5 +130,15 @@ public class DirectoryMonitorThread extends Thread {
         Arrays.stream(files).forEach(this::handleFile);
     }
 
+    private byte[] hashFile(File file) {
+
+        try {
+            byte[] data = Files.readAllBytes(file.toPath());
+            return MessageDigest.getInstance("MD5").digest(data);
+        } catch (IOException | NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
 }
