@@ -1,31 +1,23 @@
 package dst.ass2.aop.impl.threads;
 
-import java.io.File;
-import java.util.Objects;
+import dst.ass2.aop.IPluginExecutable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PluginExecutorThread extends Thread {
+    private final IPluginExecutable pluginFile;
+    private static final Logger LOG = LoggerFactory.getLogger(PluginExecutorThread.class);
+
+    public PluginExecutorThread(IPluginExecutable pluginFile) {
+        this.pluginFile = pluginFile;
+    }
+
 
     @Override
     public void run() {
-        System.err.println("Attempted to execute a plugin");
+        LOG.info("Executing plugin: {} ", pluginFile.toString());
+
+        pluginFile.execute();
     }
 
-    private void checkDirForPlugins(File dir) {
-        //early termination hack
-        if (!dir.isDirectory() ||
-                Objects.requireNonNull(dir.listFiles()).length == 0) {
-            System.err.println("This directory is empty or not a directory");
-            return;
-        }
-
-
-        for (File file : Objects.requireNonNull(dir.listFiles())) {
-            checkIfPluginExecutable(file);
-        }
-
-    }
-
-    private void checkIfPluginExecutable(File file) {
-        System.err.println("Checking if " + file.getName() + " is plugin executable");
-    }
 }
