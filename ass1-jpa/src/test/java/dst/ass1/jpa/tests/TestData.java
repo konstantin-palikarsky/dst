@@ -1015,45 +1015,7 @@ public class TestData implements ITestData {
         tripInfo4Id = tripInfo4.getId();
         tripInfo5Id = tripInfo5.getId();
         tripInfo17Id = tripInfo5.getId();
-        System.out.println("Rider IDs:");
-        System.out.println(" * Rider 1: "+rider1Id);
-        System.out.println(" * Rider 2: "+rider2Id);
-        System.out.println(" * Rider 3: "+rider3Id);
-        System.out.println(" * Rider 4: "+rider4Id);
-        System.out.println("Location IDs:");
-        System.out.println(" * Location 1: "+location1Id);
-        System.out.println(" * Location 2: "+location2Id);
-        System.out.println(" * Location 3: "+location3Id);
-        System.out.println(" * Location 4: "+location4Id);
-        System.out.println(" * Location 5: "+location5Id);
-        System.out.println("Trip IDs:");
-        System.out.println(" * Trip 1: "+trip1Id);
-        System.out.println(" * Trip 2: "+trip2Id);
-        System.out.println(" * Trip 3: "+trip3Id);
-        System.out.println(" * Trip 4: "+trip4Id);
-        System.out.println(" * Trip 5: "+trip5Id);
-        System.out.println(" * Trip 6: "+trip6Id);
-        System.out.println(" * Trip 7: "+trip7Id);
-        System.out.println(" * Trip 8: "+trip8Id);
-        System.out.println(" * Trip 9: "+trip9Id);
-        System.out.println(" * Trip 10: "+trip10Id);
-        System.out.println(" * Trip 11: "+trip11Id);
-        System.out.println(" * Trip 12: "+trip12Id);
-        System.out.println(" * Trip 13: "+trip13Id);
-        System.out.println(" * Trip 14: "+trip14Id);
-        System.out.println(" * Trip 15: "+trip15Id);
-        System.out.println(" * Trip 16: "+trip16Id);
-        System.out.println(" * Trip 17: "+trip17Id);
-        System.out.println("Driver IDs:");
-        System.out.println(" * Driver 1: "+driver1Id);
-        System.out.println(" * Driver 2: "+driver2Id);
-        System.out.println(" * Driver 3: "+driver3Id);
-        System.out.println(" * Driver 4: "+driver4Id);
-        System.out.println("Vehicle IDs:");
-        System.out.println(" * Vehicle 1: "+vehicle1Id);
-        System.out.println(" * Vehicle 2: "+vehicle2Id);
-        System.out.println(" * Vehicle 3: "+vehicle3Id);
-        System.out.println(" * Vehicle 4: "+vehicle4Id);
+
 
         em.flush();
     }
