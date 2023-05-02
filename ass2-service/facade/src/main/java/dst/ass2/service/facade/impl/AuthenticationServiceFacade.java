@@ -17,7 +17,7 @@ import javax.ws.rs.core.Response;
 
 @Path("/auth")
 public class AuthenticationServiceFacade implements IAuthenticationResource {
-
+    //TODO migrate annotations
     @Inject
     private IAuthenticationClient authClient;
 
