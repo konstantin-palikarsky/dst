@@ -6,18 +6,15 @@ import org.aspectj.lang.annotation.Aspect;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Aspect
 public class LoggingAspect {
 
-    // TODO
     @Around("execution(* dst.ass2.aop.IPluginExecutable.execute(..)) && !@annotation(Invisible)")
     public Object around(ProceedingJoinPoint point) {
-        var advisedObject = point.getThis();
-
+        var advisedObject = point.getTarget();
 
 
         try {
@@ -33,42 +30,48 @@ public class LoggingAspect {
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
-
+        try {
+            printAfterOutput(advisedObject);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return returnValue;
     }
 
-    Function<Void, Void> outputLog(Object advisedObject, String output) {
+    public void logOutput(Object advisedObject, String output) {
         var loggerFields =
                 Arrays.stream(advisedObject.getClass().getDeclaredFields())
-                        .filter(x -> java.util.logging.Logger.class.isAssignableFrom(x.getClass()))
+                        .filter(x -> Logger.class.isAssignableFrom(x.getType()))
                         .collect(Collectors.toList());
 
         if (loggerFields.isEmpty()) {
-            return (VOID) -> {
-                System.out.print(output);
-                return VOID;
-            };
+            System.out.print(output);
+            return;
         }
+
         var loggerField = loggerFields.get(0);
         loggerField.setAccessible(true);
         Logger logger;
         try {
-            logger = (Logger) loggerField.get(advisedObject);
+            logger = (java.util.logging.Logger) loggerField.get(advisedObject);
         } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
 
 
-        return (VOID) -> {
-            logger.info(output);
-            return VOID;
-        };
+        logger.info(output);
+        System.err.println(logger);
     }
 
     private void printBeforeOutput(Object advisedObject) throws IOException {
         String output = "Plugin " + advisedObject.getClass() + " started to execute\n";
-        outputLog(advisedObject, output);
 
+        logOutput(advisedObject, output);
+    }
 
+    private void printAfterOutput(Object advisedObject) throws IOException {
+        String output = "Plugin " + advisedObject.getClass() + " completed execution\n";
+
+        logOutput(advisedObject, output);
     }
 }
