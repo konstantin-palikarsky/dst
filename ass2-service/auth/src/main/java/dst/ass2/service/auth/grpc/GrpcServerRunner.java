@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 public class GrpcServerRunner implements IGrpcServerRunner {
     // Ideally this will be injected from an env var,
     // to ensure execution doesn't time out in production
-    private static final long MAX_TIMEOUT = Long.MAX_VALUE;
+    private static final long MAX_TIMEOUT = 2;
 
     public GrpcServerRunner() {
     }
