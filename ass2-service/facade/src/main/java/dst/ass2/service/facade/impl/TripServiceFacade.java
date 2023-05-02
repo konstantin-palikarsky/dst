@@ -19,10 +19,10 @@ import javax.ws.rs.core.Response;
 
 @Path("/trips")
 public class TripServiceFacade implements ITripServiceResource {
+    private static final String TRIP_SERVICE_URL = "http://localhost:8091/";
+    private static final Logger LOG = LoggerFactory.getLogger(TripServiceFacade.class);
 
     private ITripServiceResource realService;
-
-    private static final Logger LOG = LoggerFactory.getLogger(TripServiceFacade.class);
 
     @PostConstruct
     private void setup() {
@@ -32,8 +32,7 @@ public class TripServiceFacade implements ITripServiceResource {
 
 
         Client client = ClientBuilder.newClient(configuration);
-        //Hardcoded for now
-        WebTarget webTarget = client.target("http://localhost:8091/");
+        WebTarget webTarget = client.target(TRIP_SERVICE_URL);
 
         realService = WebResourceFactory.newResource(ITripServiceResource.class, webTarget);
     }

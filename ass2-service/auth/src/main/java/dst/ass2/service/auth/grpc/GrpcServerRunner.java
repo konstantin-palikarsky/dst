@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
 
 @ManagedBean
 public class GrpcServerRunner implements IGrpcServerRunner {
+    // Ideally this will be injected from an env var,
+    // to ensure execution doesn't time out in production
+    private static final long MAX_TIMEOUT = Long.MAX_VALUE;
 
     public GrpcServerRunner() {
     }
@@ -29,8 +32,7 @@ public class GrpcServerRunner implements IGrpcServerRunner {
 
         server.start();
         try {
-            //TODO Adjust for live testing
-            server.awaitTermination(2, TimeUnit.SECONDS);
+            server.awaitTermination(MAX_TIMEOUT, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {
         }
 
