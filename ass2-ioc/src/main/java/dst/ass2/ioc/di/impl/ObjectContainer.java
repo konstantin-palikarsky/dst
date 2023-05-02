@@ -11,9 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
@@ -21,7 +19,6 @@ public class ObjectContainer implements IObjectContainer {
     private final Properties properties = new Properties();
     private final Map<Class<?>, Object> singletonCache = new ConcurrentHashMap<>();
     private final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
-    private final Lock propsLock = new ReentrantLock();
 
     @Override
     public Properties getProperties() {
@@ -60,7 +57,7 @@ public class ObjectContainer implements IObjectContainer {
             }
 
             constructor = (Constructor<T>) Arrays.stream(constructors).filter(
-                    x -> x.getParameterCount() < 1).collect(Collectors.toList()).get(0);
+                    x -> x.getParameterCount() == 0).collect(Collectors.toList()).get(0);
 
 
         } catch (NoSuchMethodException e) {
@@ -240,7 +237,6 @@ public class ObjectContainer implements IObjectContainer {
     }
 
     // Taken from Stack Overflow
-    // TODO should handle singletons
     // https://stackoverflow.com/questions/1042798/retrieving-the-inherited-attribute-names-values-using-java-reflection
     public List<Field> getAllFields(List<Field> fields, Class<?> type) {
         fields.addAll(Arrays.asList(type.getDeclaredFields()));
@@ -252,8 +248,8 @@ public class ObjectContainer implements IObjectContainer {
         return fields;
     }
 
-    public List<Method> getAllMethods(List<Method> fields, Class<?> type) {
-        fields.addAll(0, Arrays.asList(type.getDeclaredMethods()));
+    public List<Method> getAllMethods(List<Method> methods, Class<?> type) {
+        methods.addAll(0, Arrays.asList(type.getDeclaredMethods()));
 
         try {
 
@@ -266,16 +262,16 @@ public class ObjectContainer implements IObjectContainer {
             ) {
                 if (superClass.getAnnotation(Component.class).scope().equals(Scope.SINGLETON)) {
                     getObject(superClass);
-                    return fields;
+                    return methods;
                 }
 
-                getAllMethods(fields, type.getSuperclass());
+                getAllMethods(methods, type.getSuperclass());
             }
 
         } finally {
             cacheLock.writeLock().unlock();
         }
 
-        return fields;
+        return methods;
     }
 }

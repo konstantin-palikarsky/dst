@@ -6,8 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
 @Path("/trips")
@@ -19,9 +18,7 @@ public class TripServiceResource implements ITripServiceResource {
     private static final Logger LOG = LoggerFactory.getLogger(TripServiceResource.class);
 
     @Override
-    @GET
-    @Path("/{id}")
-    public Response getTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
+    public Response getTrip(Long tripId) throws EntityNotFoundException {
         LOG.info("Getting trip {}", tripId);
         var tripDto = tripService.find(tripId);
 
@@ -33,11 +30,9 @@ public class TripServiceResource implements ITripServiceResource {
     }
 
     @Override
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response createTrip(@FormParam("riderId") Long riderId,
-                               @FormParam("pickupId") Long pickupId,
-                               @FormParam("destinationId") Long destinationId)
+    public Response createTrip(Long riderId,
+                               Long pickupId,
+                               Long destinationId)
             throws EntityNotFoundException {
         LOG.info("Creating trip for rider {}, pickup {}, and destination {}",
                 riderId, pickupId, destinationId);
@@ -47,9 +42,7 @@ public class TripServiceResource implements ITripServiceResource {
     }
 
     @Override
-    @DELETE
-    @Path("/{id}")
-    public Response deleteTrip(@PathParam("id") Long tripId) throws EntityNotFoundException {
+    public Response deleteTrip(Long tripId) throws EntityNotFoundException {
         LOG.info("Deleting trip {}", tripId);
 
         tripService.delete(tripId);
@@ -58,11 +51,8 @@ public class TripServiceResource implements ITripServiceResource {
 
 
     @Override
-    @POST
-    @Path("/{id}/stops")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response addStop(@PathParam("id") Long tripId,
-                            @FormParam("locationId") Long locationId)
+    public Response addStop(Long tripId,
+                            Long locationId)
             throws EntityNotFoundException {
         LOG.info("Adding stop {} to trip {}", locationId, tripId);
 
@@ -81,10 +71,8 @@ public class TripServiceResource implements ITripServiceResource {
     }
 
     @Override
-    @DELETE
-    @Path("/{id}/stops/{locationId}")
-    public Response removeStop(@PathParam("id") Long tripId,
-                               @PathParam("locationId") Long locationId)
+    public Response removeStop(Long tripId,
+                               Long locationId)
             throws EntityNotFoundException {
         LOG.info("Removing stop {} from trip {}", locationId, tripId);
 
@@ -101,9 +89,7 @@ public class TripServiceResource implements ITripServiceResource {
     }
 
     @Override
-    @PATCH
-    @Path("/{id}/confirm")
-    public Response confirm(@PathParam("id") Long tripId) throws EntityNotFoundException, InvalidTripException {
+    public Response confirm(Long tripId) throws EntityNotFoundException, InvalidTripException {
         LOG.info("Confirming trip {}", tripId);
 
         tripService.confirm(tripId);
@@ -113,10 +99,7 @@ public class TripServiceResource implements ITripServiceResource {
 
 
     @Override
-    @POST
-    @Path("/{id}/match")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response match(@PathParam("id") Long tripId,
+    public Response match(Long tripId,
                           MatchDTO matchDTO)
             throws EntityNotFoundException, DriverNotAvailableException {
         LOG.info("Matching trip {}", tripId);
@@ -127,9 +110,7 @@ public class TripServiceResource implements ITripServiceResource {
     }
 
     @Override
-    @PATCH
-    @Path("/{id}/cancel")
-    public Response cancel(@PathParam("id") Long tripId) throws EntityNotFoundException {
+    public Response cancel(Long tripId) throws EntityNotFoundException {
         LOG.info("Cancelling trip {}", tripId);
 
         tripService.cancel(tripId);
@@ -138,10 +119,7 @@ public class TripServiceResource implements ITripServiceResource {
     }
 
     @Override
-    @POST
-    @Path("/{id}/complete")
-    @Consumes(MediaType.APPLICATION_JSON)
-    public Response complete(@PathParam("id") Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
+    public Response complete(Long tripId, TripInfoDTO tripInfoDTO) throws EntityNotFoundException {
         LOG.info("Completing trip {}, on {}", tripId, tripInfoDTO.getCompleted());
 
         tripService.complete(tripId, tripInfoDTO);
