@@ -19,7 +19,7 @@ public abstract class BasicDAOImpl<T> implements GenericDAO<T> {
 
     @Override
     public boolean delete(Long id) {
-        var entityToRemove = findById(id);
+        var entityToRemove = findById(id );
 
         if (entityToRemove == null) {
             return false;
@@ -36,8 +36,8 @@ public abstract class BasicDAOImpl<T> implements GenericDAO<T> {
 
     @Override
     public T findById(Long id) {
-
-        return em.find(targetClass, id);
+                                       // Pessimistic Lock Example
+        return em.find(targetClass, id /*, LockModeType.PESSIMISTIC_READ*/);
     }
 
     public T save(T entity) {
