@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 public class TripServiceResource implements ITripServiceResource {
 
     @Inject
-    TripService tripService;
+    private TripService tripService;
 
     private static final Logger LOG = LoggerFactory.getLogger(TripServiceResource.class);
 
