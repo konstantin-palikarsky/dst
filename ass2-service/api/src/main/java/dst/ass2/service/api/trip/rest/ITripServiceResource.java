@@ -10,7 +10,6 @@ import javax.ws.rs.core.Response;
 /**
  * This interface exposes the {@code ITripService} as a RESTful interface.
  */
-@Path("/trips")
 public interface ITripServiceResource {
 
     @POST
