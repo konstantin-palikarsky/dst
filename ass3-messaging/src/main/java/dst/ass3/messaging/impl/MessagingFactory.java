@@ -1,7 +1,12 @@
 package dst.ass3.messaging.impl;
 
 import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.http.client.Client;
 import dst.ass3.messaging.*;
+
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class MessagingFactory implements IMessagingFactory {
 
@@ -17,7 +22,14 @@ public class MessagingFactory implements IMessagingFactory {
 
     @Override
     public IWorkloadMonitor createWorkloadMonitor() {
-        return new WorkloadMonitor();
+        Client client;
+        try {
+            client = new Client(new URL(Constants.RMQ_API_URL), Constants.RMQ_USER, Constants.RMQ_PASSWORD);
+        } catch (MalformedURLException | URISyntaxException e) {
+            throw new RuntimeException("Could not instantiate RabbitMQ client for workload monitoring!");
+        }
+
+        return new WorkloadMonitor(client);
     }
 
     @Override
