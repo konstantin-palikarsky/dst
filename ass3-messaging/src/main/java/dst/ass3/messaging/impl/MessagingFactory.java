@@ -9,20 +9,17 @@ public class MessagingFactory implements IMessagingFactory {
 
     @Override
     public IQueueManager createQueueManager() {
-        // TODO
-        return null;
+        return new QueueManager();
     }
 
     @Override
     public IRequestGateway createRequestGateway() {
-        // TODO
-        return null;
+        return new RequestGateway();
     }
 
     @Override
     public IWorkloadMonitor createWorkloadMonitor() {
-        // TODO
-        return null;
+        return new WorkloadMonitor();
     }
 
     @Override
