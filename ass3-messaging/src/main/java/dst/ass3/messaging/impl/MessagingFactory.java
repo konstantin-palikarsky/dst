@@ -1,15 +1,19 @@
 package dst.ass3.messaging.impl;
 
-import dst.ass3.messaging.IMessagingFactory;
-import dst.ass3.messaging.IQueueManager;
-import dst.ass3.messaging.IRequestGateway;
-import dst.ass3.messaging.IWorkloadMonitor;
+import com.rabbitmq.client.ConnectionFactory;
+import dst.ass3.messaging.*;
 
 public class MessagingFactory implements IMessagingFactory {
 
     @Override
     public IQueueManager createQueueManager() {
-        return new QueueManager();
+        var connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost(Constants.RMQ_HOST);
+        connectionFactory.setPort(Integer.parseInt(Constants.RMQ_PORT));
+        connectionFactory.setUsername(Constants.RMQ_USER);
+        connectionFactory.setPassword(Constants.RMQ_PASSWORD);
+
+        return new QueueManager(connectionFactory);
     }
 
     @Override
