@@ -1,7 +1,6 @@
 package dst.ass3.messaging.impl;
 
 import com.rabbitmq.http.client.Client;
-import com.rabbitmq.http.client.domain.QueueInfo;
 import dst.ass3.messaging.Constants;
 import dst.ass3.messaging.IWorkloadMonitor;
 import dst.ass3.messaging.Region;
@@ -11,24 +10,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class WorkloadMonitor implements IWorkloadMonitor {
-    private final HashMap<Region, QueueInfo> regionQueueMap;
+    private final Client client;
 
     public WorkloadMonitor(Client client) {
-        var regionQueueMap = new HashMap<Region, QueueInfo>();
-
-        regionQueueMap.put(Region.AT_LINZ, client.getQueue(Constants.RMQ_VHOST, Constants.QUEUE_AT_LINZ));
-        regionQueueMap.put(Region.AT_VIENNA, client.getQueue(Constants.RMQ_VHOST, Constants.QUEUE_AT_VIENNA));
-        regionQueueMap.put(Region.DE_BERLIN, client.getQueue(Constants.RMQ_VHOST, Constants.QUEUE_DE_BERLIN));
-
-        this.regionQueueMap = regionQueueMap;
+        this.client = client;
     }
 
     @Override
     public Map<Region, Long> getRequestCount() {
         var regionRequestsMap = new HashMap<Region, Long>();
 
-        regionQueueMap.keySet().forEach(
-                x -> regionRequestsMap.put(x, regionQueueMap.get(x).getMessagesReady())
+        client.getQueues().forEach(
+                x -> regionRequestsMap.put(nameToRegion(x.getName()), x.getMessagesReady())
         );
 
         return regionRequestsMap;
@@ -38,8 +31,8 @@ public class WorkloadMonitor implements IWorkloadMonitor {
     public Map<Region, Long> getWorkerCount() {
         var regionWorkersMap = new HashMap<Region, Long>();
 
-        regionQueueMap.keySet().forEach(
-                x -> regionWorkersMap.put(x, regionQueueMap.get(x).getConsumerCount())
+        client.getQueues().forEach(
+                x -> regionWorkersMap.put(nameToRegion(x.getName()), x.getConsumerCount())
         );
 
         return regionWorkersMap;
@@ -52,6 +45,19 @@ public class WorkloadMonitor implements IWorkloadMonitor {
 
     @Override
     public void close() throws IOException {
+    }
+
+    private Region nameToRegion(String name) {
+        switch (name) {
+            case Constants.QUEUE_AT_LINZ:
+                return Region.AT_LINZ;
+            case Constants.QUEUE_AT_VIENNA:
+                return Region.AT_VIENNA;
+            case Constants.QUEUE_DE_BERLIN:
+                return Region.DE_BERLIN;
+            default:
+                throw new RuntimeException("Non-existent request region");
+        }
     }
 
 }
