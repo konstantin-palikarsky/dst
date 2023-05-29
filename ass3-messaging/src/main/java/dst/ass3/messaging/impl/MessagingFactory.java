@@ -7,18 +7,12 @@ public class MessagingFactory implements IMessagingFactory {
 
     @Override
     public IQueueManager createQueueManager() {
-        var connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost(Constants.RMQ_HOST);
-        connectionFactory.setPort(Integer.parseInt(Constants.RMQ_PORT));
-        connectionFactory.setUsername(Constants.RMQ_USER);
-        connectionFactory.setPassword(Constants.RMQ_PASSWORD);
-
-        return new QueueManager(connectionFactory);
+        return new QueueManager(getConfiguredFactory());
     }
 
     @Override
     public IRequestGateway createRequestGateway() {
-        return new RequestGateway();
+        return new RequestGateway(getConfiguredFactory());
     }
 
     @Override
@@ -29,5 +23,14 @@ public class MessagingFactory implements IMessagingFactory {
     @Override
     public void close() {
         // implement if needed
+    }
+
+    private ConnectionFactory getConfiguredFactory() {
+        var connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost(Constants.RMQ_HOST);
+        connectionFactory.setPort(Integer.parseInt(Constants.RMQ_PORT));
+        connectionFactory.setUsername(Constants.RMQ_USER);
+        connectionFactory.setPassword(Constants.RMQ_PASSWORD);
+        return connectionFactory;
     }
 }
