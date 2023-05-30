@@ -29,7 +29,7 @@ public class MessagingFactory implements IMessagingFactory {
             throw new RuntimeException("Could not instantiate RabbitMQ client for workload monitoring!");
         }
 
-        return new WorkloadMonitor(client);
+        return new WorkloadMonitor(client, getConfiguredFactory());
     }
 
     @Override
@@ -40,6 +40,7 @@ public class MessagingFactory implements IMessagingFactory {
     private ConnectionFactory getConfiguredFactory() {
         var connectionFactory = new ConnectionFactory();
         connectionFactory.setHost(Constants.RMQ_HOST);
+        connectionFactory.setVirtualHost(Constants.RMQ_VHOST);
         connectionFactory.setPort(Integer.parseInt(Constants.RMQ_PORT));
         connectionFactory.setUsername(Constants.RMQ_USER);
         connectionFactory.setPassword(Constants.RMQ_PASSWORD);
