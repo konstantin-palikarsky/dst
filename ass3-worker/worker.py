@@ -105,7 +105,7 @@ if __name__ == "__main__":
     channel = connection.channel()
     worker_queue = "dst." + region
 
-    channel.queue_declare(queue=worker_queue)
+    channel.queue_declare(queue=worker_queue, durable=True)
     channel.basic_consume(queue=worker_queue, on_message_callback=match_trip_to_driver)
 
     print("Starting to consume queue: ", worker_queue)
