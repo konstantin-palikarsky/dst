@@ -12,7 +12,7 @@ region = None
 redis_client = None
 
 
-def callback(ch, method, properties, body):
+def match_trip_to_driver(ch, method, properties, body):
     start_time = time.time()
 
     trip_request = json.loads(body.decode())
@@ -77,7 +77,11 @@ def callback(ch, method, properties, body):
     }).encode("utf-8")
 
     channel.basic_publish(exchange="dst.workers", routing_key="requests." + region, body=result_json)
-    print(f"Successfully processed trip request for region: {region}, at location: {pickup_location}")
+    if closest_driver_id:
+        print(f"Successfully matched trip request {trip_id} for region: {region} "
+              f"to driver {closest_driver_id} in {processing_time}ms")
+    else:
+        print(f"Could not match trip request {trip_id} for region: {region} to a driver")
 
 
 def sigterm_handler(signum, frame):
@@ -105,7 +109,7 @@ if __name__ == "__main__":
     worker_queue = "dst." + region
 
     channel.queue_declare(queue=worker_queue)
-    channel.basic_consume(queue=worker_queue, on_message_callback=callback)
+    channel.basic_consume(queue=worker_queue, on_message_callback=match_trip_to_driver)
 
     print("Starting to consume queue: ", worker_queue)
     channel.start_consuming()
