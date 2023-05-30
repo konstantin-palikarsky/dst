@@ -1,12 +1,11 @@
+import json
+import pika
+import random
+import redis
+import signal
 import sys
 import time
-import pika
-import os
-import redis
-import json
 from haversine import haversine, Unit
-import signal
-import random
 
 region = None
 redis_client = None
@@ -28,17 +27,15 @@ def match_trip_to_driver(ch, method, properties, body):
     if not drivers:
         print("Could not match trip, due to no active drivers in system")
 
-    # Decode byte strings to strings and split coordinates into latitude and longitude
-    drivers = {driver_id.decode(): tuple(map(float, coords.decode().split())) for driver_id, coords in drivers.items()}
+    drivers = {driver_id.decode(): tuple(map(float, location.decode().split())) for driver_id, location in drivers.items()}
+    pickup_location = (pickup_latitude, pickup_longitude)
 
     closest_driver_id = None
     min_distance = float("inf")
 
     while drivers:
-        pickup_coords = (pickup_latitude, pickup_longitude)
-
-        for driver_id, driver_coords in drivers.items():
-            distance = haversine(driver_coords, pickup_coords, unit=Unit.KILOMETERS)
+        for driver_id, driver_location in drivers.items():
+            distance = haversine(driver_location, pickup_location, unit=Unit.KILOMETERS)
             if distance < min_distance:
                 min_distance = distance
                 closest_driver_id = driver_id

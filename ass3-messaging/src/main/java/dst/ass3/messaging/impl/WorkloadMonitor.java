@@ -32,10 +32,10 @@ public class WorkloadMonitor implements IWorkloadMonitor {
             throw new RuntimeException("Error instantiating RabbitMQ in WorkloadMonitor");
         }
 
-        declareAndBindQueues();
+        setUpMonitorQueue();
     }
 
-    private void declareAndBindQueues() {
+    private void setUpMonitorQueue() {
 
         try {
             var queueName = channel.queueDeclare("WORKLOAD_MONITOR:" + UUID.randomUUID()
