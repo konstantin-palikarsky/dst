@@ -18,3 +18,6 @@ You should activate this profile in your IDE's Maven ([IDEA],[Eclipse]) configur
 
    [IDEA]: https://www.jetbrains.com/help/idea/maven-support.html
    [Eclipse]: http://www.eclipse.org/m2e/documentation/release-notes-15.html#new-maven-profile-management-ui
+
+NB!!! Due to developing on Windows I have connected my client to Docker via an address, this won't work unless TLS is 
+disabled and in general should not be necessary to run the ContainerService on a different machine
