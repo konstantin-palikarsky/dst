@@ -15,7 +15,6 @@ public class ElasticityFactory implements IElasticityFactory {
     @Override
     public IElasticityController createElasticityController(IContainerService containerService,
                                                             IWorkloadMonitor workloadMonitor) {
-        // TODO
         return new ElasticityController(containerService,workloadMonitor);
     }
 
