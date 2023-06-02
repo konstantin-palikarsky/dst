@@ -1,1 +1,226 @@
-// TODO: add the data from the execution plan export
+{
+  "nodes": [
+    {
+      "id": 171,
+      "type": "Source: Custom Source",
+      "pact": "Data Source",
+      "contents": "Source: Custom Source",
+      "parallelism": 1
+    },
+    {
+      "id": 172,
+      "type": "Filter",
+      "pact": "Operator",
+      "contents": "Filter",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 171,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 173,
+      "type": "Map",
+      "pact": "Operator",
+      "contents": "Map",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 172,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 174,
+      "type": "Timestamps/Watermarks",
+      "pact": "Operator",
+      "contents": "Timestamps/Watermarks",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 173,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 177,
+      "type": "CepOperator",
+      "pact": "Operator",
+      "contents": "CepOperator",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 174,
+          "ship_strategy": "HASH",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 181,
+      "type": "CepOperator",
+      "pact": "Operator",
+      "contents": "CepOperator",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 174,
+          "ship_strategy": "HASH",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 183,
+      "type": "Map",
+      "pact": "Operator",
+      "contents": "Map",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 181,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 185,
+      "type": "Map",
+      "pact": "Operator",
+      "contents": "Map",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 177,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 188,
+      "type": "Window(GlobalWindows(), PurgingTrigger, ProcessWindowFunction$2)",
+      "pact": "Operator",
+      "contents": "Window(GlobalWindows(), PurgingTrigger, ProcessWindowFunction$2)",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 177,
+          "ship_strategy": "HASH",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 191,
+      "type": "Window(GlobalWindows(), PurgingTrigger, ProcessWindowFunction$3)",
+      "pact": "Operator",
+      "contents": "Window(GlobalWindows(), PurgingTrigger, ProcessWindowFunction$3)",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 183,
+          "ship_strategy": "HASH",
+          "side": "second"
+        },
+        {
+          "id": 185,
+          "ship_strategy": "HASH",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 176,
+      "type": "Sink: Unnamed",
+      "pact": "Data Sink",
+      "contents": "Sink: Unnamed",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 174,
+          "ship_strategy": "HASH",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 178,
+      "type": "Sink: Unnamed",
+      "pact": "Data Sink",
+      "contents": "Sink: Unnamed",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 177,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 180,
+      "type": "Sink: Unnamed",
+      "pact": "Data Sink",
+      "contents": "Sink: Unnamed",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 177,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 182,
+      "type": "Sink: Unnamed",
+      "pact": "Data Sink",
+      "contents": "Sink: Unnamed",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 181,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 189,
+      "type": "Sink: Unnamed",
+      "pact": "Data Sink",
+      "contents": "Sink: Unnamed",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 188,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    },
+    {
+      "id": 192,
+      "type": "Sink: Unnamed",
+      "pact": "Data Sink",
+      "contents": "Sink: Unnamed",
+      "parallelism": 1,
+      "predecessors": [
+        {
+          "id": 191,
+          "ship_strategy": "FORWARD",
+          "side": "second"
+        }
+      ]
+    }
+  ]
+}

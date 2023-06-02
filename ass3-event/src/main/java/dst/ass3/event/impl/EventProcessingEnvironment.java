@@ -73,6 +73,8 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
 
         registerAndSinkAverageDurationStream(matchDurationStream);
         registerAndSinkWarningStream(warningStream);
+
+        //System.out.println(env.getExecutionPlan());
     }
 
     @Override
