@@ -54,7 +54,7 @@ public class EventSourceFunction implements IEventSourceFunction {
                 running = false;
                 break;
             }
-            ctx.collectWithTimestamp(event, event.getTimestamp());
+            ctx.collect(event);
         }
     }
 

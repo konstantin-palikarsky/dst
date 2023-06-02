@@ -5,14 +5,10 @@ import dst.ass3.event.model.domain.ITripEventInfo;
 import dst.ass3.event.model.domain.Region;
 import dst.ass3.event.model.domain.TripState;
 import dst.ass3.event.model.events.*;
-import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
-import org.apache.flink.api.common.eventtime.TimestampAssignerSupplier;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternFlatSelectFunction;
 import org.apache.flink.cep.PatternFlatTimeoutFunction;
-import org.apache.flink.cep.PatternSelectFunction;
 import org.apache.flink.cep.pattern.Pattern;
 import org.apache.flink.cep.pattern.conditions.IterativeCondition;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -52,9 +48,10 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
                 = input
                 .filter(event -> event.getRegion() != null)
                 .map(LifecycleEvent::new)
-                .assignTimestampsAndWatermarks(WatermarkStrategy.
-                        forGenerator(new PunctuatedWatermarkSupplier()
-                        ).withTimestampAssigner((TimestampAssignerSupplier<LifecycleEvent>) context -> (SerializableTimestampAssigner<LifecycleEvent>) (lifecycleEvent, recordTimestamp) -> lifecycleEvent.getTimestamp()))
+                .assignTimestampsAndWatermarks(
+                        WatermarkStrategy.forGenerator(new PunctuatedWatermarkSupplier())
+                                .withTimestampAssigner(context ->
+                                        (lifecycleEvent, recordTimestamp) -> lifecycleEvent.getTimestamp()))
                 .keyBy(LifecycleEvent::getTripId);
 
         lifecycleEventStream.addSink(lifecycleEventStreamSink);
@@ -62,14 +59,15 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
         final var timeoutTag = new OutputTag<MatchingTimeoutWarning>("timeout-side-output") {
         };
 
-        var matchDurationStream = registerAndSinkDurationStream(lifecycleEventStream, timeoutTag);
+        var matchDurationStream =
+                registerAndSinkDurationStream(lifecycleEventStream, timeoutTag);
 
         var tripFailedWarningStream =
                 registerAndSinkTripFailedWarningStream(lifecycleEventStream)
-                        .map((MapFunction<TripFailedWarning, Warning>) tripFailedWarning -> tripFailedWarning);
+                        .map(tripFailedWarning -> (Warning) tripFailedWarning);
 
         var matchTimedOutWarningStream = matchDurationStream.getSideOutput(timeoutTag)
-                .map((MapFunction<MatchingTimeoutWarning, Warning>) timeoutWarning -> timeoutWarning);
+                .map(timeoutWarning -> (Warning) timeoutWarning);
 
         var warningStream = tripFailedWarningStream.union(matchTimedOutWarningStream);
 
@@ -135,8 +133,6 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
                         if (count >= 5) {
                             out.collect(new AverageMatchingDuration(region, sum / count));
                         }
-
-
                     }
                 }).addSink(averageDurationStreamSink);
     }
@@ -178,16 +174,10 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
         var tripFailedStream =
                 CEP.pattern(lifecycleEventStream, tripMatchFailedPattern)
                         .inEventTime()
-                        .select(
-                                new PatternSelectFunction<LifecycleEvent, TripFailedWarning>() {
-                                    @Override
-                                    public TripFailedWarning select(Map<String, List<LifecycleEvent>> pattern) throws Exception {
-
-                                        LifecycleEvent start = pattern.get("queued").get(0);
-                                        return new TripFailedWarning(start.getTripId(), start.getRegion());
-                                    }
-                                }
-                        );
+                        .select(pattern -> {
+                            LifecycleEvent start = pattern.get("queued").get(0);
+                            return new TripFailedWarning(start.getTripId(), start.getRegion());
+                        });
 
         tripFailedStream.addSink(tripFailedWarningStreamSink);
 
