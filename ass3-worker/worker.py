@@ -54,8 +54,6 @@ def match_trip_to_driver(ch, method, properties, body):
             drivers = redis_client.hgetall(drivers_hash)
             drivers = {driver_id.decode(): tuple(map(float, coords.decode().split())) for driver_id, coords in
                        drivers.items()}
-            if not drivers:
-                print("Could not match trip, due to no active drivers in system")
 
     if region == "at_linz":
         time.sleep(random.randint(1, 2))
