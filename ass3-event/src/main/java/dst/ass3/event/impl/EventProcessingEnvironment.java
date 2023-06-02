@@ -8,6 +8,7 @@ import dst.ass3.event.model.events.*;
 import org.apache.flink.api.common.eventtime.SerializableTimestampAssigner;
 import org.apache.flink.api.common.eventtime.TimestampAssignerSupplier;
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.cep.CEP;
 import org.apache.flink.cep.PatternFlatSelectFunction;
 import org.apache.flink.cep.PatternFlatTimeoutFunction;
@@ -17,6 +18,7 @@ import org.apache.flink.cep.pattern.conditions.IterativeCondition;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
@@ -28,6 +30,7 @@ import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -56,38 +59,22 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
 
         lifecycleEventStream.addSink(lifecycleEventStreamSink);
 
+        final var timeoutTag = new OutputTag<MatchingTimeoutWarning>("timeout-side-output") {
+        };
 
-        var tripFailedWarningStream = registerAndSinkTripFailedWarningStream(lifecycleEventStream);
-        var matchDurationStream = registerAndSinkDurationStream(lifecycleEventStream);
+        var matchDurationStream = registerAndSinkDurationStream(lifecycleEventStream, timeoutTag);
 
-        matchDurationStream.keyBy(event -> event.getRegion().name())
-                .window(GlobalWindows.create())
-                .trigger(PurgingTrigger.of(CountTrigger.of(5)))
-                .process(new ProcessWindowFunction<MatchingDuration, AverageMatchingDuration, String, GlobalWindow>() {
-                    @Override
-                    public void process(String key,
-                                        ProcessWindowFunction<MatchingDuration, AverageMatchingDuration, String,
-                                                GlobalWindow>.Context context, Iterable<MatchingDuration> elements,
-                                        Collector<AverageMatchingDuration> out) {
-                        Region region = Region.valueOf(key);
+        var tripFailedWarningStream =
+                registerAndSinkTripFailedWarningStream(lifecycleEventStream)
+                        .map((MapFunction<TripFailedWarning, Warning>) tripFailedWarning -> tripFailedWarning);
 
-                        double sum = 0;
-                        int count = 0;
+        var matchTimedOutWarningStream = matchDurationStream.getSideOutput(timeoutTag)
+                .map((MapFunction<MatchingTimeoutWarning, Warning>) timeoutWarning -> timeoutWarning);
 
-                        for (MatchingDuration event : elements) {
-                            sum += event.getDuration();
-                            count++;
-                        }
+        var warningStream = tripFailedWarningStream.union(matchTimedOutWarningStream);
 
-                        if (count >= 5) {
-                            out.collect(new AverageMatchingDuration(region, sum / count));
-                        }
-
-
-                    }
-                }).addSink(averageDurationStreamSink);
-
-
+        registerAndSinkAverageDurationStream(matchDurationStream);
+        registerAndSinkWarningStream(warningStream);
     }
 
     @Override
@@ -125,6 +112,51 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
         this.averageDurationStreamSink = sink;
     }
 
+    private void registerAndSinkAverageDurationStream(DataStream<MatchingDuration> matchDurationStream) {
+        matchDurationStream.keyBy(event -> event.getRegion().name())
+                .window(GlobalWindows.create())
+                .trigger(PurgingTrigger.of(CountTrigger.of(5)))
+                .process(new ProcessWindowFunction<MatchingDuration, AverageMatchingDuration, String, GlobalWindow>() {
+                    @Override
+                    public void process(String key,
+                                        ProcessWindowFunction<MatchingDuration, AverageMatchingDuration, String,
+                                                GlobalWindow>.Context context, Iterable<MatchingDuration> elements,
+                                        Collector<AverageMatchingDuration> out) {
+                        Region region = Region.valueOf(key);
+
+                        double sum = 0;
+                        int count = 0;
+
+                        for (MatchingDuration event : elements) {
+                            sum += event.getDuration();
+                            count++;
+                        }
+
+                        if (count >= 5) {
+                            out.collect(new AverageMatchingDuration(region, sum / count));
+                        }
+
+
+                    }
+                }).addSink(averageDurationStreamSink);
+    }
+
+    private void registerAndSinkWarningStream(DataStream<Warning> warningStream) {
+        warningStream
+                .keyBy(event -> event.getRegion().name())
+                .window(GlobalWindows.create())
+                .trigger(PurgingTrigger.of(CountTrigger.of(3)))
+                .process(new ProcessWindowFunction<Warning, Alert, String, GlobalWindow>() {
+                    @Override
+                    public void process(String key,
+                                        ProcessWindowFunction<Warning, Alert, String, GlobalWindow>.Context context,
+                                        Iterable<Warning> elements, Collector<Alert> out) {
+                        List<Warning> warningsList = new ArrayList<>();
+                        elements.forEach(warningsList::add);
+                        out.collect(new Alert(Region.valueOf(key), warningsList));
+                    }
+                }).addSink(alertStreamSink);
+    }
 
     private DataStream<TripFailedWarning> registerAndSinkTripFailedWarningStream(KeyedStream<LifecycleEvent, Long> lifecycleEventStream) {
         var tripMatchFailedPattern =
@@ -162,8 +194,8 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
         return tripFailedStream;
     }
 
-    private DataStream<MatchingDuration> registerAndSinkDurationStream(
-            KeyedStream<LifecycleEvent, Long> lifecycleEventStream) {
+    private SingleOutputStreamOperator<MatchingDuration> registerAndSinkDurationStream(
+            KeyedStream<LifecycleEvent, Long> lifecycleEventStream, OutputTag<MatchingTimeoutWarning> timeoutTag) {
 
         var matchingPattern =
                 Pattern.<LifecycleEvent>begin("create")
@@ -180,8 +212,6 @@ public class EventProcessingEnvironment implements IEventProcessingEnvironment {
                             }
                         }).within(matchingTimeout);
 
-        final var timeoutTag = new OutputTag<MatchingTimeoutWarning>("timeout-side-output") {
-        };
 
         var durationStream =
                 CEP.pattern(lifecycleEventStream, matchingPattern)
