@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.*;
@@ -15,7 +14,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -23,7 +21,6 @@ public class DirectoryMonitorThread extends Thread {
     private final File dir;
     private final ExecutorService pluginRunnerPool;
     private final WatchService watchService;
-    private WatchKey directoryKey;
 
     private final Set<byte[]> executedPlugins = new HashSet<>();
     private static final Logger LOG = LoggerFactory.getLogger(PluginExecutorThread.class);
@@ -45,6 +42,7 @@ public class DirectoryMonitorThread extends Thread {
         LOG.info("Attempted to monitor directory {}", dir.getName());
         handleInitialPlugins();
 
+        WatchKey directoryKey;
         try {
             directoryKey = dir.toPath().register(
                     watchService,
@@ -85,34 +83,42 @@ public class DirectoryMonitorThread extends Thread {
     }
 
     private List<IPluginExecutable> getExecutablePlugins(File file) {
-        var returnList = new ArrayList<IPluginExecutable>();
-        try {
-            ZipInputStream zip = new ZipInputStream(new FileInputStream(file.getAbsoluteFile()));
-            for (ZipEntry entry = zip.getNextEntry(); entry != null; entry = zip.getNextEntry()) {
+        List<IPluginExecutable> returnList = new ArrayList<>();
+
+        try (ZipInputStream zip = new ZipInputStream(new FileInputStream(file))) {
+            ZipEntry entry;
+
+            while ((entry = zip.getNextEntry()) != null) {
 
                 if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
-                    String className = entry.getName().replace('/', '.');
-                    className = className.substring(0, className.length() - ".class".length());
-
-                    try (URLClassLoader cl = new URLClassLoader(new URL[]{file.toURI().toURL()})) {
-
-                        var constructors = cl.loadClass(className).getDeclaredConstructors();
-                        var defaultConstructor = Arrays.stream(constructors).filter(x ->
-                                x.getParameterCount() == 0).collect(Collectors.toList()).get(0);
-
-                        defaultConstructor.setAccessible(true);
-                        returnList.add((IPluginExecutable) defaultConstructor.newInstance());
-
-
-                    } catch (IllegalAccessException | InstantiationException | ClassNotFoundException |
-                             ClassCastException | InvocationTargetException ignored) {
+                    String className = formatClassName(entry.getName());
+                    IPluginExecutable plugin = createPlugin(file, className);
+                    if (plugin != null) {
+                        returnList.add(plugin);
                     }
                 }
+
             }
         } catch (IOException e) {
-            throw new RuntimeException("Catastrophal exception while parsing jar: " + file.getName());
+            throw new RuntimeException("Exception while parsing jar: " + file.getName(), e);
         }
+
         return returnList;
+    }
+
+    private String formatClassName(String entryName) {
+        return entryName.replace('/', '.').substring(0, entryName.length() - ".class".length());
+    }
+
+    private IPluginExecutable createPlugin(File file, String className) {
+        try (URLClassLoader cl = new URLClassLoader(new URL[]{file.toURI().toURL()})) {
+            Class<?> loadedClass = cl.loadClass(className);
+            if (IPluginExecutable.class.isAssignableFrom(loadedClass)) {
+                return (IPluginExecutable) loadedClass.getDeclaredConstructor().newInstance();
+            }
+        } catch (Exception ignored) {
+        }
+        return null;
     }
 
     private File eventToFile(WatchEvent<?> event) {

@@ -44,9 +44,7 @@ public class PluginExecutor implements IPluginExecutor {
 
     @Override
     public void start() {
-        for (DirectoryMonitorThread thread : dirToMonitorMap.values()) {
-            thread.start();
-        }
+        dirToMonitorMap.values().forEach(Thread::start);
 
         executorIsRunning = true;
     }
@@ -55,9 +53,7 @@ public class PluginExecutor implements IPluginExecutor {
     public void stop() {
         pluginRunnerPool.shutdown();
 
-        for (DirectoryMonitorThread thread : dirToMonitorMap.values()) {
-            thread.interrupt();
-        }
+        dirToMonitorMap.values().forEach(Thread::interrupt);
 
         executorIsRunning = false;
     }
