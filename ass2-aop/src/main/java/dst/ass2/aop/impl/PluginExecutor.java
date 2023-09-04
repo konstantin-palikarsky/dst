@@ -24,8 +24,8 @@ public class PluginExecutor implements IPluginExecutor {
         if (!dir.isDirectory()) {
             throw new RuntimeException("Trying to monitor a file, not a directory: " + dir.getName());
         }
-        var monitorThreadForFile = new DirectoryMonitorThread(dir, pluginRunnerPool);
-        dirToMonitorMap.put(dir, monitorThreadForFile);
+
+        dirToMonitorMap.put(dir, new DirectoryMonitorThread(dir, pluginRunnerPool));
     }
 
     @Override

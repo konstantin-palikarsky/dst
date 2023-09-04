@@ -18,22 +18,23 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class DirectoryMonitorThread extends Thread {
+    private static final Logger LOG = LoggerFactory.getLogger(PluginExecutorThread.class);
+
     private final File dir;
-    private final ExecutorService pluginRunnerPool;
+    private final ExecutorService pluginExecutor;
     private final WatchService watchService;
 
     private final Set<byte[]> executedPlugins = new HashSet<>();
-    private static final Logger LOG = LoggerFactory.getLogger(PluginExecutorThread.class);
 
 
-    public DirectoryMonitorThread(File dir, ExecutorService pluginRunnerPool) {
+    public DirectoryMonitorThread(File dir, ExecutorService pluginExecutor) {
         this.dir = dir;
-        this.pluginRunnerPool = pluginRunnerPool;
+        this.pluginExecutor = pluginExecutor;
 
         try {
             watchService = FileSystems.getDefault().newWatchService();
         } catch (IOException e) {
-            throw new RuntimeException("Couldn't create watch service for directory: " + dir.getName());
+            throw new RuntimeException("Couldn't create watch service for directory: " + dir.getName(), e);
         }
     }
 
@@ -94,7 +95,10 @@ public class DirectoryMonitorThread extends Thread {
             return;
         }
 
-        pluginsToExecute.forEach(x -> pluginRunnerPool.execute(new PluginExecutorThread(x)));
+        pluginsToExecute.stream()
+                .map(PluginExecutorThread::new)
+                .forEach(pluginExecutor::execute);
+
         executedPlugins.add(hashFile(file));
     }
 
@@ -124,7 +128,9 @@ public class DirectoryMonitorThread extends Thread {
     }
 
     private String formatClassName(String entryName) {
-        return entryName.replace('/', '.').substring(0, entryName.length() - ".class".length());
+        return entryName
+                .replace('/', '.')
+                .substring(0, entryName.lastIndexOf(".class"));
     }
 
     private IPluginExecutable createPlugin(File file, String className) {
