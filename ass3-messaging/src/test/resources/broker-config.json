@@ -34,7 +34,7 @@
   ],
   "virtualhostnodes": [
     {
-      "name": "default",
+      "name": "/",
       "type": "Memory",
       "defaultVirtualHostNode": "true",
       "virtualHostInitialConfiguration": "{\"type\": \"Memory\"}"

@@ -1,12 +1,17 @@
 package dst.ass3.messaging;
 
 import com.rabbitmq.http.client.Client;
+import org.apache.qpid.server.SystemLauncher;
+import org.apache.qpid.server.configuration.IllegalConfigurationException;
+import org.apache.qpid.server.model.SystemConfig;
 import org.junit.rules.ExternalResource;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RabbitResource extends ExternalResource {
 
@@ -51,5 +56,38 @@ public class RabbitResource extends ExternalResource {
 
     public CachingConnectionFactory getConnectionFactory() {
         return connectionFactory;
+    }
+
+    private static class EmbeddedInMemoryQpidBroker {
+
+
+        private static final String DEFAULT_INITIAL_CONFIGURATION_LOCATION = "broker-config.json";
+
+        private final SystemLauncher systemLauncher;
+
+        public EmbeddedInMemoryQpidBroker() {
+            this.systemLauncher = new SystemLauncher();
+        }
+
+        public void start() throws Exception {
+            this.systemLauncher.startup(createSystemConfig());
+        }
+
+        public void shutdown() {
+            this.systemLauncher.shutdown();
+        }
+
+        private Map<String, Object> createSystemConfig() throws IllegalConfigurationException {
+            Map<String, Object> attributes = new HashMap<>();
+            URL initialConfigUrl = EmbeddedInMemoryQpidBroker.class.getClassLoader().getResource(DEFAULT_INITIAL_CONFIGURATION_LOCATION);
+
+            if (initialConfigUrl == null) {
+                throw new IllegalConfigurationException("Configuration location '" + DEFAULT_INITIAL_CONFIGURATION_LOCATION + "' not found");
+            }
+            attributes.put(SystemConfig.TYPE, "Memory");
+            attributes.put(SystemConfig.INITIAL_CONFIGURATION_LOCATION, initialConfigUrl.toExternalForm());
+            attributes.put(SystemConfig.STARTUP_LOGGED_TO_SYSTEM_OUT, true);
+            return attributes;
+        }
     }
 }
