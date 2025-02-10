@@ -27,7 +27,7 @@ public class QueueManager implements IQueueManager {
             }
 
         } catch (IOException | TimeoutException e) {
-            throw new RuntimeException("Error communicating with RabbitMQ in QueueManager");
+            throw new RuntimeException("Error communicating with RabbitMQ in QueueManager", e);
         }
     }
 

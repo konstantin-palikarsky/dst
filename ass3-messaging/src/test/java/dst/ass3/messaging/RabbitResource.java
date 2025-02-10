@@ -11,12 +11,15 @@ import java.net.URL;
 public class RabbitResource extends ExternalResource {
 
     private RabbitAdmin admin;
+    private EmbeddedInMemoryQpidBroker broker;
     private Client manager;
     private CachingConnectionFactory connectionFactory;
     private RabbitTemplate client;
 
     @Override
     protected void before() throws Throwable {
+        this.broker = new EmbeddedInMemoryQpidBroker();
+        this.broker.start();
 
         manager = new Client(new URL(Constants.RMQ_API_URL), Constants.RMQ_USER, Constants.RMQ_PASSWORD);
 
@@ -31,6 +34,7 @@ public class RabbitResource extends ExternalResource {
     @Override
     protected void after() {
         connectionFactory.destroy();
+        this.broker.shutdown();
     }
 
     public Client getManager() {
