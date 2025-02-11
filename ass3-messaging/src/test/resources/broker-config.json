@@ -52,7 +52,8 @@
   "plugins": [
     {
       "type": "MANAGEMENT-HTTP",
-      "name": "httpManagement"
+      "name": "httpManagement",
+      "httpBasicAuthenticationEnabled": true
     }
   ]
 }
